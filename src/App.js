@@ -119,13 +119,24 @@ function App() {
 
   const drawCard = (index) => {
     let tempPDeck = playerDeck;
+    let passCard = tempPDeck[index];
 
     tempPDeck = tempPDeck.filter((data, idx) => idx != index)
     setPlayerDeck(tempPDeck);
     setCurrentCard(playerDeck[index]);
+
+    let turn = getPlayerTurn();
+
+    socket.emit("player_draw", { room: room, cardDrawed: passCard, turn: turn})
   };
 
-  const getPlayerTurn = () => {};
+  const getPlayerTurn = () => {
+    if(playerTurn < listUser.length){
+      setPlayerTurn(playerTurn+1)
+    }else {
+      setPlayerTurn(0);
+    }
+  };
 
 
   useEffect(() => {
