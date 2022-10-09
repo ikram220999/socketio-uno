@@ -19,18 +19,26 @@ function App() {
     localStorage.setItem("id", socket.id);
   });
 
+  // let gameDeck = deck;
+  const [currentCard, setCurrentCard] = useState({});
+  // console.log("gameDeck", gameDeck);
   const [isHost, setIsHost] = useState(false);
   const [gameDeck, setGameDeck] = useState(deck);
+  console.log("gameDeck lepas loop", gameDeck);
   const [user, setUser] = useState("");
   const [listUser, setListUser] = useState([]);
   const [room, setRoom] = useState(null);
   const [gameCanvas, setGameCanvas] = useState(false);
+  const [isStart, setIsStart] = useState(false);
 
+  const [playerDeck, setPlayerDeck] = useState([]);
   const [startGame, setStartGame] = useState(false);
   const [isPlayer, setIsPlayer] = useState(false);
   const [showGame, setShowGame] = useState(false);
 
   console.log("isHost", isHost);
+
+  console.log("cur_card", currentCard);
 
   const joinRoom = (room) => {
     setRoom(room);
@@ -67,10 +75,50 @@ function App() {
   };
 
   const gameStart = () => {
+    let tempId = localStorage.getItem("id");
     console.log("host start the game");
-    socket.emit("start_game", { room: room, started: true });
-    setGameCanvas(false);
-    setShowGame(true);
+    let obj = {};
+    let deckTemp = gameDeck;
+
+    for (let i = 0; i < listUser.length; i++) {
+      let arr = [];
+      for (let p = 0; p < 5; p++) {
+        let randomIndex = Math.floor(Math.random() * deckTemp.length);
+        // console.log("randomIndex", randomIndex);
+        arr.push(deckTemp[randomIndex]);
+
+        deckTemp = deckTemp.filter((gd, idx) => idx != randomIndex);
+      }
+      obj[listUser[i]] = arr;
+    }
+
+    setGameDeck(deckTemp);
+
+    console.log("gameDeck lepas agih", deckTemp);
+    console.log("senarai kad bagi setiap user", obj);
+
+    socket.emit("start_game", { room: room, started: true, cardPlayer: obj });
+
+    for (let key in obj) {
+      console.log("key", key);
+      if (tempId == key) {
+        setPlayerDeck(obj[key]);
+        setGameCanvas(false);
+        setShowGame(true);
+      }
+    }
+  };
+
+  const startDraw = () => {
+    let randCard = gameDeck[Math.floor(Math.random() * gameDeck.length)];
+    setIsStart(true);
+    setCurrentCard(randCard);
+    socket.emit("draw_first", { card: randCard, room: room });
+  };
+
+  const drawCard = () => {
+    console.log("kambing");
+    socket.emit("specific_user", { id: id, data: "mesej kepada kamu" });
   };
 
   useEffect(() => {
@@ -82,10 +130,29 @@ function App() {
     getlistUser();
 
     socket.on("start", (data) => {
-      console.log("started game");
-      setGameCanvas(false);
-      setShowGame(true);
+      let tempId = localStorage.getItem("id");
+      console.log("tempId", tempId);
+      console.log("started game", data);
+      // console.log("id parse json", tempId);
+      console.log("data obj dari server", data);
+      for (let key in data) {
+        console.log("key", key);
+        if (tempId == key) {
+          setPlayerDeck(data[key]);
+          setGameCanvas(false);
+          setShowGame(true);
+        }
+      }
     });
+
+    socket.on("my_message", (data) => {
+      console.log("my message", data);
+    });
+
+    socket.on("cur_card", (data) => {
+      setIsStart(true);
+      setCurrentCard(data)
+    })
   }, []);
 
   useEffect(() => {
@@ -147,15 +214,47 @@ function App() {
                 <div className="w-3/4 justify-center items-center">
                   <Card>
                     <div className="flex flex-col justify-center items-center">
-                      <div className="p-2 m-2 shadow-md rounded-lg w-32 flex justify-center mb-20">
-                        <img src={gameDeck[0].img} width="100"></img>
-                      </div>
+                      {isHost ? (
+                        <>
+                          {isStart ? (
+                            <>
+                              <div className="p-2 m-2 shadow-md rounded-lg w-32 flex justify-center mb-20">
+                                <img src={currentCard.img} width="100"></img>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                className="bg-red-500 py-3 px-5 font-bold rounded-md text-white hover:opacity-90"
+                                onClick={() => startDraw()}
+                              >
+                                Start game!
+                              </button>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {isStart ? (
+                            <>
+                              <div className="p-2 m-2 shadow-md rounded-lg w-32 flex justify-center mb-20">
+                                <img src={currentCard.img} width="100"></img>
+                              </div>
+                            </>
+                          ) : (
+                            ""
+                          )}
+                        </>
+                      )}
                       <div className="flex flex-row flex-wrap justify-center">
                         <br></br>
-                        {gameDeck.map((data) => {
+                        {playerDeck.map((data) => {
                           return (
                             <>
-                              <div className="p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100">
+                              <div
+                                onClick={() => drawCard()}
+                                className="p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
+                              >
                                 <img src={data.img} width="50"></img>
                               </div>
                             </>
