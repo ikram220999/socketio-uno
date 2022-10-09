@@ -31,6 +31,9 @@ function App() {
   const [gameCanvas, setGameCanvas] = useState(false);
   const [isStart, setIsStart] = useState(false);
   const [playerTurn, setPlayerTurn] = useState(0);
+  const [winner, setWinner] = useState(null);
+
+  console.log("playerTurn", playerTurn);
 
   const [playerDeck, setPlayerDeck] = useState([]);
   const [startGame, setStartGame] = useState(false);
@@ -114,30 +117,52 @@ function App() {
     let randCard = gameDeck[Math.floor(Math.random() * gameDeck.length)];
     setIsStart(true);
     setCurrentCard(randCard);
-    socket.emit("draw_first", { card: randCard, room: room });
+    socket.emit("draw_first", {
+      card: randCard,
+      room: room,
+      listUser: listUser,
+    });
   };
 
   const drawCard = (index) => {
     let tempPDeck = playerDeck;
     let passCard = tempPDeck[index];
 
-    tempPDeck = tempPDeck.filter((data, idx) => idx != index)
+    tempPDeck = tempPDeck.filter((data, idx) => idx != index);
     setPlayerDeck(tempPDeck);
     setCurrentCard(playerDeck[index]);
 
     let turn = getPlayerTurn();
 
-    socket.emit("player_draw", { room: room, cardDrawed: passCard, turn: turn})
+    if (tempPDeck.length == 0) {
+      getWinner();
+    }
+
+    socket.emit("player_draw", {
+      room: room,
+      cardDrawed: passCard,
+      turn: turn,
+    });
+  };
+
+  const getWinner = () => {
+    // if (playerDeck.length == 0) { 
+      socket.emit("winner", { room: room, winnerId: socket.id });
+      setShowGame(false);
+    setWinner(socket.id);
+   
+    // }
   };
 
   const getPlayerTurn = () => {
-    if(playerTurn < listUser.length){
-      setPlayerTurn(playerTurn+1)
-    }else {
+    if (playerTurn < listUser.length - 1) {
+      setPlayerTurn(playerTurn + 1);
+      return playerTurn + 1;
+    } else {
       setPlayerTurn(0);
+      return 0;
     }
   };
-
 
   useEffect(() => {
     socket.on("test", (data) => {
@@ -169,7 +194,18 @@ function App() {
 
     socket.on("cur_card", (data) => {
       setIsStart(true);
-      setCurrentCard(data);
+      setCurrentCard(data.card);
+      setListUser(data.listUser);
+    });
+
+    socket.on("player_draw_ws", (data) => {
+      setCurrentCard(data.cardDrawed);
+      setPlayerTurn(data.turn);
+    });
+
+    socket.on("display_winner", (data) => {
+      setWinner(data);
+      setShowGame(false);
     });
   }, []);
 
@@ -266,13 +302,13 @@ function App() {
                       )}
                       {playerTurn === listUser.indexOf(socket.id) ? (
                         <>
-                          <h3 className="font-semibold mb-3">
+                          <h3 className="font-semibold mb-3 text-green-400">
                             Its your turn, please draw a card
                           </h3>
                         </>
                       ) : (
                         <>
-                          <h3 className="font-semibold mb-3">
+                          <h3 className="font-semibold mb-3 text-red-600">
                             Its not your turn, please wait
                           </h3>
                         </>
@@ -308,7 +344,38 @@ function App() {
               </div>
             </>
           ) : (
-            ""
+            <>
+              {winner != null ? (
+                <>
+                  <div className="w-full h-screen flex flex-col justify-center items-center">
+                    <h2 className="font-bold text-4xl mb-3">Game ended !</h2>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-40 h-40 text-orange-500"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"
+                      />
+                    </svg>
+                      <h3 className="text-lg font-bold mr-3 mt-4">winner</h3>
+                    <h3 className="font-bold text-green-600 py-2 px-4 shadow-md rounded-md">
+                      {winner}
+                    </h3>
+
+                    <div className="flex flex-row justify-center items-center">
+                    </div>
+                  </div>
+                </>
+              ) : (
+                ""
+              )}
+            </>
           )}
         </>
       )}
