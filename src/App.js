@@ -30,6 +30,7 @@ function App() {
   const [room, setRoom] = useState(null);
   const [gameCanvas, setGameCanvas] = useState(false);
   const [isStart, setIsStart] = useState(false);
+  const [playerTurn, setPlayerTurn] = useState(0);
 
   const [playerDeck, setPlayerDeck] = useState([]);
   const [startGame, setStartGame] = useState(false);
@@ -116,10 +117,16 @@ function App() {
     socket.emit("draw_first", { card: randCard, room: room });
   };
 
-  const drawCard = () => {
-    console.log("kambing");
-    socket.emit("specific_user", { id: id, data: "mesej kepada kamu" });
+  const drawCard = (index) => {
+    let tempPDeck = playerDeck;
+
+    tempPDeck = tempPDeck.filter((data, idx) => idx != index)
+    setPlayerDeck(tempPDeck);
+    setCurrentCard(playerDeck[index]);
   };
+
+  const getPlayerTurn = () => {};
+
 
   useEffect(() => {
     socket.on("test", (data) => {
@@ -151,8 +158,8 @@ function App() {
 
     socket.on("cur_card", (data) => {
       setIsStart(true);
-      setCurrentCard(data)
-    })
+      setCurrentCard(data);
+    });
   }, []);
 
   useEffect(() => {
@@ -246,17 +253,40 @@ function App() {
                           )}
                         </>
                       )}
+                      {playerTurn === listUser.indexOf(socket.id) ? (
+                        <>
+                          <h3 className="font-semibold mb-3">
+                            Its your turn, please draw a card
+                          </h3>
+                        </>
+                      ) : (
+                        <>
+                          <h3 className="font-semibold mb-3">
+                            Its not your turn, please wait
+                          </h3>
+                        </>
+                      )}
                       <div className="flex flex-row flex-wrap justify-center">
                         <br></br>
-                        {playerDeck.map((data) => {
+                        {playerDeck.map((data, idx) => {
                           return (
                             <>
-                              <div
-                                onClick={() => drawCard()}
-                                className="p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
-                              >
-                                <img src={data.img} width="50"></img>
-                              </div>
+                              {playerTurn === listUser.indexOf(socket.id) ? (
+                                <>
+                                  <div
+                                    onClick={() => drawCard(idx)}
+                                    className="p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
+                                  >
+                                    <img src={data.img} width="50"></img>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
+                                    <img src={data.img} width="50"></img>
+                                  </div>
+                                </>
+                              )}
                             </>
                           );
                         })}
