@@ -22,7 +22,6 @@ function App() {
     localStorage.setItem("id", socket.id);
   });
 
-  // let gameDeck = deck;
   const [currentCard, setCurrentCard] = useState({});
   // console.log("gameDeck", gameDeck);
   const [isHost, setIsHost] = useState(false);
