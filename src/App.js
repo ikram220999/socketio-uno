@@ -10,6 +10,9 @@ import { deck } from "./Deck";
 
 const socket = io.connect("http://localhost:3001");
 
+const gDeck = localStorage.setItem("gameDeck", JSON.stringify(deck));
+localStorage.setItem("playerDeck", null);
+
 function App() {
   let id = "";
 
@@ -23,7 +26,9 @@ function App() {
   const [currentCard, setCurrentCard] = useState({});
   // console.log("gameDeck", gameDeck);
   const [isHost, setIsHost] = useState(false);
-  const [gameDeck, setGameDeck] = useState(deck);
+  const [gameDeck, setGameDeck] = useState(
+    JSON.parse(localStorage.getItem("gameDeck"))
+  );
   console.log("gameDeck lepas loop", gameDeck);
   const [user, setUser] = useState("");
   const [listUser, setListUser] = useState([]);
@@ -35,7 +40,11 @@ function App() {
 
   console.log("playerTurn", playerTurn);
 
-  const [playerDeck, setPlayerDeck] = useState([]);
+  const [playerDeck, setPlayerDeck] = useState(
+    JSON.parse(localStorage.getItem("playerDeck"))
+  );
+
+  console.log("playerDeck", playerDeck);
   const [startGame, setStartGame] = useState(false);
   const [isPlayer, setIsPlayer] = useState(false);
   const [showGame, setShowGame] = useState(false);
@@ -80,13 +89,14 @@ function App() {
 
   const gameStart = () => {
     let tempId = localStorage.getItem("id");
+    localStorage.setItem("listUser", JSON.stringify(listUser));
     console.log("host start the game");
     let obj = {};
     let deckTemp = gameDeck;
 
     for (let i = 0; i < listUser.length; i++) {
       let arr = [];
-      for (let p = 0; p < 5; p++) {
+      for (let p = 0; p < 7; p++) {
         let randomIndex = Math.floor(Math.random() * deckTemp.length);
         // console.log("randomIndex", randomIndex);
         arr.push(deckTemp[randomIndex]);
@@ -95,17 +105,23 @@ function App() {
       }
       obj[listUser[i]] = arr;
     }
-
-    setGameDeck(deckTemp);
+    let a = localStorage.setItem("gameDeck", JSON.stringify(deckTemp));
+    // setGameDeck(deckTemp);
 
     console.log("gameDeck lepas agih", deckTemp);
     console.log("senarai kad bagi setiap user", obj);
 
-    socket.emit("start_game", { room: room, started: true, cardPlayer: obj });
+    socket.emit("start_game", {
+      room: room,
+      started: true,
+      cardPlayer: obj,
+      listUser: listUser,
+    });
 
     for (let key in obj) {
       console.log("key", key);
       if (tempId == key) {
+        localStorage.setItem("playerDeck", JSON.stringify(obj[key]));
         setPlayerDeck(obj[key]);
         setGameCanvas(false);
         setShowGame(true);
@@ -127,9 +143,12 @@ function App() {
   const drawCard = (index) => {
     let tempPDeck = playerDeck;
     let passCard = tempPDeck[index];
+    let tempGameDeck = gameDeck;
 
     tempPDeck = tempPDeck.filter((data, idx) => idx != index);
     setPlayerDeck(tempPDeck);
+    localStorage.setItem("playerDeck", JSON.stringify(tempPDeck));
+    tempGameDeck.push(playerDeck[index]);
     setCurrentCard(playerDeck[index]);
 
     let turn = getPlayerTurn();
@@ -138,19 +157,28 @@ function App() {
       getWinner();
     }
 
-    socket.emit("player_draw", {
-      room: room,
-      cardDrawed: passCard,
-      turn: turn,
-    });
+    if (passCard.code == "p2") {
+      console.log("plus 2 card");
+      socket.emit("plus_two", {
+        room: room,
+        cardDrawed: passCard,
+        turn: turn,
+      });
+    } else {
+      socket.emit("player_draw", {
+        room: room,
+        cardDrawed: passCard,
+        turn: turn,
+      });
+    }
   };
 
   const getWinner = () => {
-    // if (playerDeck.length == 0) { 
-      socket.emit("winner", { room: room, winnerId: socket.id });
-      setShowGame(false);
+    // if (playerDeck.length == 0) {
+    socket.emit("winner", { room: room, winnerId: socket.id });
+    setShowGame(false);
     setWinner(socket.id);
-   
+
     // }
   };
 
@@ -178,10 +206,16 @@ function App() {
       console.log("started game", data);
       // console.log("id parse json", tempId);
       console.log("data obj dari server", data);
-      for (let key in data) {
+      for (let key in data.cardPlayer) {
         console.log("key", key);
         if (tempId == key) {
-          setPlayerDeck(data[key]);
+          localStorage.setItem("listUser", JSON.stringify(data.listUser));
+          setListUser(data.listUser);
+          let a = localStorage.setItem(
+            "playerDeck",
+            JSON.stringify(data.cardPlayer[key])
+          );
+          setPlayerDeck(data.cardPlayer[key]);
           setGameCanvas(false);
           setShowGame(true);
         }
@@ -202,6 +236,60 @@ function App() {
       setCurrentCard(data.cardDrawed);
       setPlayerTurn(data.turn);
     });
+
+    socket.on("plus_two_ws", (data) => {
+      // setPlayerTurn(data)
+
+      let list_user = JSON.parse(localStorage.getItem("listUser"))
+      console.log("cardDrawed plusto", data.cardDrawed);
+      setCurrentCard(data.cardDrawed);
+      setPlayerTurn(data.turn);
+      if (data.turn == list_user.indexOf(socket.id)) {
+      console.log("plus_two_ws", data);
+
+      console.log("check 1 player deck", playerDeck);
+
+      let newPlayerDeck = JSON.parse(localStorage.getItem("playerDeck"));
+      let newGameDeck = JSON.parse(localStorage.getItem("gameDeck"));
+      let idxCard = [];
+
+      console.log("newGameDeck", newGameDeck);
+      for (let p = 0; p < 2; p++) {
+        let randomIndex = Math.floor(Math.random() * newGameDeck.length);
+        // console.log("randomIndex", randomIndex);
+        idxCard.push(newGameDeck[randomIndex]);
+
+        console.log("idxCard", idxCard);
+        
+
+        console.log("check newPlayerDeck", newPlayerDeck);
+
+        newGameDeck = newGameDeck.filter((data, idx) => idx != randomIndex);
+      }
+      let latPlayerDeck = newPlayerDeck.concat(idxCard);
+
+      console.log("concat", latPlayerDeck);
+
+      setGameDeck(newGameDeck);
+      localStorage.setItem("gameDeck", JSON.stringify(newGameDeck));
+      setPlayerDeck(latPlayerDeck);
+      localStorage.setItem("playerDeck", JSON.stringify(latPlayerDeck));
+      // socket.emit("minus_two_after_player_add", {
+      //   room: room,
+      //   idxCard: idxCard,
+      // });
+      }
+    });
+
+    // socket.on("minus_two_after_player_add_ws", (data) => {
+    //   let newGameDeck = gameDeck;
+
+    //   for (let i = 0; i < data.length; i++) {
+    //     newGameDeck = newGameDeck.filter((gd, idx) => idx != data[i]);
+    //   }
+
+    //   setGameDeck(newGameDeck);
+    // });
 
     socket.on("display_winner", (data) => {
       setWinner(data);
@@ -315,28 +403,53 @@ function App() {
                       )}
                       <div className="flex flex-row flex-wrap justify-center">
                         <br></br>
-                        {playerDeck.map((data, idx) => {
-                          return (
-                            <>
-                              {playerTurn === listUser.indexOf(socket.id) ? (
+
+                        {playerDeck ? (
+                          <>
+                            {playerDeck.map((data, idx) => {
+                              return (
                                 <>
-                                  <div
-                                    onClick={() => drawCard(idx)}
-                                    className="p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
-                                  >
-                                    <img src={data.img} width="50"></img>
-                                  </div>
+                                  {playerTurn ===
+                                  listUser.indexOf(socket.id) ? (
+                                    <>
+                                      {currentCard.color == data.color ||
+                                      currentCard.code == data.code ? (
+                                        <>
+                                          <div
+                                            onClick={() => drawCard(idx)}
+                                            className="p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
+                                          >
+                                            <img
+                                              src={data.img}
+                                              width="50"
+                                            ></img>
+                                          </div>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <div className="p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
+                                            <img
+                                              src={data.img}
+                                              width="50"
+                                            ></img>
+                                          </div>
+                                        </>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div className="p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
+                                        <img src={data.img} width="50"></img>
+                                      </div>
+                                    </>
+                                  )}
                                 </>
-                              ) : (
-                                <>
-                                  <div className="p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
-                                    <img src={data.img} width="50"></img>
-                                  </div>
-                                </>
-                              )}
-                            </>
-                          );
-                        })}
+                              );
+                            })}
+                          </>
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
                   </Card>
@@ -363,13 +476,12 @@ function App() {
                         d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"
                       />
                     </svg>
-                      <h3 className="text-lg font-bold mr-3 mt-4">winner</h3>
+                    <h3 className="text-lg font-bold mr-3 mt-4">winner</h3>
                     <h3 className="font-bold text-green-600 py-2 px-4 shadow-md rounded-md">
                       {winner}
                     </h3>
 
-                    <div className="flex flex-row justify-center items-center">
-                    </div>
+                    <div className="flex flex-row justify-center items-center"></div>
                   </div>
                 </>
               ) : (
