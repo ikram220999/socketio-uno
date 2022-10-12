@@ -1,6 +1,6 @@
 import "./App.css";
 import io from "socket.io-client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
 import Login from "./ModalLogin";
 import Room from "./page/Room";
@@ -10,7 +10,12 @@ import { deck } from "./Deck";
 
 const socket = io.connect("http://localhost:3001");
 
-const gDeck = localStorage.setItem("gameDeck", JSON.stringify(deck));
+let g = localStorage.getItem("gameDeck");
+if (g) {
+} else {
+  localStorage.setItem("gameDeck", JSON.stringify(deck));
+}
+
 localStorage.setItem("playerDeck", null);
 
 function App() {
@@ -28,6 +33,9 @@ function App() {
   const [gameDeck, setGameDeck] = useState(
     JSON.parse(localStorage.getItem("gameDeck"))
   );
+  const setGameDeckValue = useCallback((newValue) => {
+    setGameDeck(newValue);
+  }, []);
   console.log("gameDeck lepas loop", gameDeck);
   const [user, setUser] = useState("");
   const [listUser, setListUser] = useState([]);
@@ -143,12 +151,15 @@ function App() {
   const drawCard = (index) => {
     let tempPDeck = playerDeck;
     let passCard = tempPDeck[index];
-    let tempGameDeck = gameDeck;
+    let tempGameDeck = JSON.parse(localStorage.getItem("gameDeck"));
 
+    localStorage.setItem("playerDeck", JSON.stringify(tempPDeck));
     tempPDeck = tempPDeck.filter((data, idx) => idx != index);
     setPlayerDeck(tempPDeck);
-    localStorage.setItem("playerDeck", JSON.stringify(tempPDeck));
     tempGameDeck.push(playerDeck[index]);
+
+    localStorage.setItem("gameDeck", JSON.stringify(tempGameDeck));
+
     setCurrentCard(playerDeck[index]);
 
     let turn = getPlayerTurn();
@@ -163,12 +174,14 @@ function App() {
         room: room,
         cardDrawed: passCard,
         turn: turn,
+        gameDeck: tempGameDeck,
       });
     } else {
       socket.emit("player_draw", {
         room: room,
         cardDrawed: passCard,
         turn: turn,
+        gameDeck: tempGameDeck,
       });
     }
   };
@@ -235,51 +248,55 @@ function App() {
     });
 
     socket.on("player_draw_ws", (data) => {
+      localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
+
+      setGameDeck(data.gameDeck);
       setCurrentCard(data.cardDrawed);
       setPlayerTurn(data.turn);
     });
 
     socket.on("plus_two_ws", (data) => {
       // setPlayerTurn(data)
+      localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
+      // setGameDeck(data.gameDeck);
 
-      let list_user = JSON.parse(localStorage.getItem("listUser"))
+      let list_user = JSON.parse(localStorage.getItem("listUser"));
       console.log("cardDrawed plusto", data.cardDrawed);
       setCurrentCard(data.cardDrawed);
       setPlayerTurn(data.turn);
       if (data.turn == list_user.indexOf(socket.id)) {
-      console.log("plus_two_ws", data);
+        console.log("plus_two_ws", data);
 
-      console.log("check 1 player deck", playerDeck);
+        console.log("check 1 player deck", playerDeck);
 
-      let newPlayerDeck = JSON.parse(localStorage.getItem("playerDeck"));
-      let newGameDeck = JSON.parse(localStorage.getItem("gameDeck"));
-      let idxCard = [];
+        let newPlayerDeck = JSON.parse(localStorage.getItem("playerDeck"));
+        let newGameDeck = JSON.parse(localStorage.getItem("gameDeck"));
+        let idxCard = [];
 
-      console.log("newGameDeck", newGameDeck);
-      for (let p = 0; p < 2; p++) {
-        let randomIndex = Math.floor(Math.random() * newGameDeck.length);
-        // console.log("randomIndex", randomIndex);
-        idxCard.push(newGameDeck[randomIndex]);
+        console.log("newGameDeck", newGameDeck);
+        for (let p = 0; p < 2; p++) {
+          let randomIndex = Math.floor(Math.random() * newGameDeck.length);
+          // console.log("randomIndex", randomIndex);
+          idxCard.push(newGameDeck[randomIndex]);
 
-        console.log("idxCard", idxCard);
-        
+          console.log("idxCard", idxCard);
 
-        console.log("check newPlayerDeck", newPlayerDeck);
+          console.log("check newPlayerDeck", newPlayerDeck);
 
-        newGameDeck = newGameDeck.filter((data, idx) => idx != randomIndex);
-      }
-      let latPlayerDeck = newPlayerDeck.concat(idxCard);
+          newGameDeck = newGameDeck.filter((data, idx) => idx != randomIndex);
+        }
+        let latPlayerDeck = newPlayerDeck.concat(idxCard);
 
-      console.log("concat", latPlayerDeck);
+        console.log("concat", latPlayerDeck);
 
-      setGameDeck(newGameDeck);
-      localStorage.setItem("gameDeck", JSON.stringify(newGameDeck));
-      setPlayerDeck(latPlayerDeck);
-      localStorage.setItem("playerDeck", JSON.stringify(latPlayerDeck));
-      // socket.emit("minus_two_after_player_add", {
-      //   room: room,
-      //   idxCard: idxCard,
-      // });
+        setGameDeck(newGameDeck);
+        localStorage.setItem("gameDeck", JSON.stringify(newGameDeck));
+        setPlayerDeck(latPlayerDeck);
+        localStorage.setItem("playerDeck", JSON.stringify(latPlayerDeck));
+        // socket.emit("minus_two_after_player_add", {
+        //   room: room,
+        //   idxCard: idxCard,
+        // });
       }
     });
 
