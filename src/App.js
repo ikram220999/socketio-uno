@@ -115,6 +115,7 @@ function App() {
       started: true,
       cardPlayer: obj,
       listUser: listUser,
+      gameDeck: deckTemp,
     });
 
     for (let key in obj) {
@@ -208,12 +209,14 @@ function App() {
       for (let key in data.cardPlayer) {
         console.log("key", key);
         if (tempId == key) {
+          localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
           localStorage.setItem("listUser", JSON.stringify(data.listUser));
           setListUser(data.listUser);
           let a = localStorage.setItem(
             "playerDeck",
             JSON.stringify(data.cardPlayer[key])
           );
+          setGameDeck(data.gameDeck);
           setPlayerDeck(data.cardPlayer[key]);
           setGameCanvas(false);
           setShowGame(true);
