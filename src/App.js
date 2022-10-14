@@ -44,6 +44,9 @@ function App() {
   const [isStart, setIsStart] = useState(false);
   const [playerTurn, setPlayerTurn] = useState(0);
   const [winner, setWinner] = useState(null);
+  const [isDrawable, setIsDrawable] = useState(true);
+
+  console.log("isDrawable", isDrawable);
 
   console.log("playerTurn", playerTurn);
 
@@ -153,9 +156,9 @@ function App() {
     let passCard = tempPDeck[index];
     let tempGameDeck = JSON.parse(localStorage.getItem("gameDeck"));
 
-    localStorage.setItem("playerDeck", JSON.stringify(tempPDeck));
     tempPDeck = tempPDeck.filter((data, idx) => idx != index);
     setPlayerDeck(tempPDeck);
+    localStorage.setItem("playerDeck", JSON.stringify(tempPDeck));
     tempGameDeck.push(playerDeck[index]);
 
     localStorage.setItem("gameDeck", JSON.stringify(tempGameDeck));
@@ -248,7 +251,20 @@ function App() {
     });
 
     socket.on("player_draw_ws", (data) => {
+      var cd = data.cardDrawed;
+      var p = false;
       localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
+
+      let playerDeck = JSON.parse(localStorage.getItem("playerDeck"));
+
+      for (var i = 0; i < playerDeck.length; i++) {
+        if (playerDeck[i].color == cd.color || playerDeck[i].code == cd.code) {
+          p = true;
+          break;
+        }
+      }
+
+      setIsDrawable(p);
 
       setGameDeck(data.gameDeck);
       setCurrentCard(data.cardDrawed);
@@ -293,22 +309,19 @@ function App() {
         localStorage.setItem("gameDeck", JSON.stringify(newGameDeck));
         setPlayerDeck(latPlayerDeck);
         localStorage.setItem("playerDeck", JSON.stringify(latPlayerDeck));
-        // socket.emit("minus_two_after_player_add", {
-        //   room: room,
-        //   idxCard: idxCard,
-        // });
+        socket.emit("minus_two_after_player_add", {
+          room: room,
+          gameDeck: newGameDeck,
+        });
       }
     });
 
-    // socket.on("minus_two_after_player_add_ws", (data) => {
-    //   let newGameDeck = gameDeck;
+    socket.on("minus_two_after_player_add_ws", (data) => {
+      let newGameDeck = data;
 
-    //   for (let i = 0; i < data.length; i++) {
-    //     newGameDeck = newGameDeck.filter((gd, idx) => idx != data[i]);
-    //   }
-
-    //   setGameDeck(newGameDeck);
-    // });
+      localStorage.setItem("gameDeck", JSON.stringify(newGameDeck));
+      setGameDeck(newGameDeck);
+    });
 
     socket.on("display_winner", (data) => {
       setWinner(data);
@@ -470,6 +483,20 @@ function App() {
                           ""
                         )}
                       </div>
+                      {playerTurn === listUser.indexOf(socket.id) ? (
+                        <>
+                        <br></br><br></br>
+                          {isDrawable == false ? (
+                            <>
+                              <Button color={"warning"}>Take one card !</Button>
+                            </>
+                          ) : (
+                            <></>
+                          )}
+                        </>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </Card>
                 </div>
