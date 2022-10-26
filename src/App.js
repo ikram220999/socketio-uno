@@ -39,12 +39,12 @@ function App() {
   console.log("gameDeck lepas loop", gameDeck);
   const [user, setUser] = useState("");
   const [listUser, setListUser] = useState([]);
-  const [room, setRoom] = useState(null);
+  const [room, setRoom] = useState(localStorage.getItem("room"));
   const [gameCanvas, setGameCanvas] = useState(false);
   const [isStart, setIsStart] = useState(false);
   const [playerTurn, setPlayerTurn] = useState(0);
   const [winner, setWinner] = useState(null);
-  const [isDrawable, setIsDrawable] = useState(true);
+  const [isDrawable, setIsDrawable] = useState();
 
   console.log("isDrawable", isDrawable);
 
@@ -64,6 +64,7 @@ function App() {
   console.log("cur_card", currentCard);
 
   const joinRoom = (room) => {
+    localStorage.setItem("room", room);
     setRoom(room);
     setGameCanvas(true);
     setIsPlayer(true);
@@ -173,6 +174,7 @@ function App() {
 
     if (passCard.code == "p2") {
       console.log("plus 2 card");
+      console.log("room ataas", room);
       socket.emit("plus_two", {
         room: room,
         cardDrawed: passCard,
@@ -196,6 +198,27 @@ function App() {
     setWinner(socket.id);
 
     // }
+  };
+
+  const takeCard = () => {
+    var newGameDeck = JSON.parse(localStorage.getItem("gameDeck"));
+    var newPlayerDeck = JSON.parse(localStorage.getItem("playerDeck"));
+
+    var turn = getPlayerTurn();
+
+    let randomIndex = Math.floor(Math.random() * newGameDeck.length);
+
+    newPlayerDeck.push(newGameDeck[randomIndex]);
+    newGameDeck = newGameDeck.filter((d, idx) => idx != randomIndex);
+
+    localStorage.setItem("playerDeck", JSON.stringify(newPlayerDeck));
+    localStorage.setItem("gameDeck", JSON.stringify(newGameDeck));
+
+    setPlayerDeck(newPlayerDeck);
+    setGameDeck(newGameDeck);
+    setPlayerTurn(turn);
+
+    socket.emit("take_card", { room: room, gameDeck: newGameDeck, turn: turn });
   };
 
   const getPlayerTurn = () => {
@@ -274,7 +297,21 @@ function App() {
     socket.on("plus_two_ws", (data) => {
       // setPlayerTurn(data)
       localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
+      var room = localStorage.getItem("room");
       // setGameDeck(data.gameDeck);
+
+      var cd = data.cardDrawed;
+      var p = false;
+      let playerDeck = JSON.parse(localStorage.getItem("playerDeck"));
+
+      for (var i = 0; i < playerDeck.length; i++) {
+        if (playerDeck[i].color == cd.color || playerDeck[i].code == cd.code) {
+          p = true;
+          break;
+        }
+      }
+
+      setIsDrawable(p);
 
       let list_user = JSON.parse(localStorage.getItem("listUser"));
       console.log("cardDrawed plusto", data.cardDrawed);
@@ -305,22 +342,32 @@ function App() {
 
         console.log("concat", latPlayerDeck);
 
-        setGameDeck(newGameDeck);
-        localStorage.setItem("gameDeck", JSON.stringify(newGameDeck));
-        setPlayerDeck(latPlayerDeck);
-        localStorage.setItem("playerDeck", JSON.stringify(latPlayerDeck));
+        console.log("room berapa", room);
         socket.emit("minus_two_after_player_add", {
           room: room,
           gameDeck: newGameDeck,
         });
+
+        setGameDeck(newGameDeck);
+        localStorage.setItem("gameDeck", JSON.stringify(newGameDeck));
+        setPlayerDeck(latPlayerDeck);
+        localStorage.setItem("playerDeck", JSON.stringify(latPlayerDeck));
       }
     });
 
     socket.on("minus_two_after_player_add_ws", (data) => {
       let newGameDeck = data;
+      console.log("new game Deck", data);
 
       localStorage.setItem("gameDeck", JSON.stringify(newGameDeck));
       setGameDeck(newGameDeck);
+    });
+
+    socket.on("take_card_ws", (data) => {
+      localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
+
+      setGameDeck(data.gameDeck);
+      setPlayerTurn(data.turn);
     });
 
     socket.on("display_winner", (data) => {
@@ -332,6 +379,24 @@ function App() {
   useEffect(() => {
     getIsHost();
   }, [listUser]);
+
+  useEffect(() => {
+    var p = false;
+    let playerDeck = JSON.parse(localStorage.getItem("playerDeck"));
+    if (playerDeck) {
+      for (var i = 0; i < playerDeck.length; i++) {
+        if (
+          playerDeck[i].color == currentCard.color ||
+          playerDeck[i].code == currentCard.code
+        ) {
+          p = true;
+          break;
+        }
+      }
+    }
+
+    setIsDrawable(p);
+  }, [playerTurn]);
 
   useEffect(() => {}, [startGame]);
 
@@ -485,10 +550,16 @@ function App() {
                       </div>
                       {playerTurn === listUser.indexOf(socket.id) ? (
                         <>
-                        <br></br><br></br>
+                          <br></br>
+                          <br></br>
                           {isDrawable == false ? (
                             <>
-                              <Button color={"warning"}>Take one card !</Button>
+                              <Button
+                                color={"warning"}
+                                onClick={() => takeCard()}
+                              >
+                                Take one card !
+                              </Button>
                             </>
                           ) : (
                             <></>
