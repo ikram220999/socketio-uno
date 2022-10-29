@@ -45,6 +45,7 @@ function App() {
   const [playerTurn, setPlayerTurn] = useState(0);
   const [winner, setWinner] = useState(null);
   const [isDrawable, setIsDrawable] = useState();
+  const [isSkipped, setIsSkipped] = useState(false);
 
   console.log("isDrawable", isDrawable);
 
@@ -181,6 +182,14 @@ function App() {
         turn: turn,
         gameDeck: tempGameDeck,
       });
+    } else if (passCard.code == "S") {
+      socket.emit("player_draw", {
+        room: room,
+        cardDrawed: passCard,
+        turn: turn,
+        gameDeck: tempGameDeck,
+        skip: true,
+      });
     } else {
       socket.emit("player_draw", {
         room: room,
@@ -274,24 +283,49 @@ function App() {
     });
 
     socket.on("player_draw_ws", (data) => {
-      var cd = data.cardDrawed;
-      var p = false;
-      localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
+      if (data.skip) {
+        let t = getPlayerTurn();
 
-      let playerDeck = JSON.parse(localStorage.getItem("playerDeck"));
+        console.log("turn sapa", t);
+        
+        setIsSkipped(true);
+        setTimeout(() => {
+          setIsSkipped(false);
+        }, 3000);
 
-      for (var i = 0; i < playerDeck.length; i++) {
-        if (playerDeck[i].color == cd.color || playerDeck[i].code == cd.code) {
-          p = true;
-          break;
+        setGameDeck(data.gameDeck);
+        setCurrentCard(data.cardDrawed);
+        setPlayerTurn(t);
+
+        socket.emit("player_draw", {
+          room: room,
+          cardDrawed: data.cardDrawed,
+          turn: t,
+          gameDeck: data.gameDeck,
+        });
+      } else {
+        var cd = data.cardDrawed;
+        var p = false;
+        localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
+
+        let playerDeck = JSON.parse(localStorage.getItem("playerDeck"));
+
+        for (var i = 0; i < playerDeck.length; i++) {
+          if (
+            playerDeck[i].color == cd.color ||
+            playerDeck[i].code == cd.code
+          ) {
+            p = true;
+            break;
+          }
         }
+
+        setIsDrawable(p);
+
+        setGameDeck(data.gameDeck);
+        setCurrentCard(data.cardDrawed);
+        setPlayerTurn(data.turn);
       }
-
-      setIsDrawable(p);
-
-      setGameDeck(data.gameDeck);
-      setCurrentCard(data.cardDrawed);
-      setPlayerTurn(data.turn);
     });
 
     socket.on("plus_two_ws", (data) => {
@@ -608,6 +642,8 @@ function App() {
           )}
         </>
       )}
+
+      {isSkipped ? <><div className="fixed h-16 w-72 text-lg font-bold text-white mx-auto place-self-baseline inset-x-0 bottom-4 p-4 bg-red-500 rounded-lg shadow-md text-center">Your turn have been skipped !</div></> : ""}
     </>
   );
 }
