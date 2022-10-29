@@ -46,6 +46,7 @@ function App() {
   const [winner, setWinner] = useState(null);
   const [isDrawable, setIsDrawable] = useState();
   const [isSkipped, setIsSkipped] = useState(false);
+  const [isPlusTwo, setIsPlusTwo] = useState(false);
 
   console.log("isDrawable", isDrawable);
 
@@ -120,6 +121,8 @@ function App() {
     let a = localStorage.setItem("gameDeck", JSON.stringify(deckTemp));
     // setGameDeck(deckTemp);
 
+    localStorage.setItem("turnDirection", "right");
+
     console.log("gameDeck lepas agih", deckTemp);
     console.log("senarai kad bagi setiap user", obj);
 
@@ -190,6 +193,15 @@ function App() {
         gameDeck: tempGameDeck,
         skip: true,
       });
+    } else if (passCard.code == "R") {
+      var { r_turn, dir } = getReverseTurn();
+      socket.emit("player_draw_reverse", {
+        room: room,
+        cardDrawed: passCard,
+        turn: r_turn,
+        direction: dir,
+        gameDeck: tempGameDeck,
+      });
     } else {
       socket.emit("player_draw", {
         room: room,
@@ -198,6 +210,24 @@ function App() {
         gameDeck: tempGameDeck,
       });
     }
+  };
+
+  const getReverseTurn = () => {
+    // let turn = playerTurn;
+
+    let direction = localStorage.getItem("turnDirection");
+
+    if (direction == "right") {
+      // localStorage.setItem("turnDirection", "left");
+      var dir = "left";
+      var r_turn = getPlayerTurn(undefined, "left");
+    } else {
+      // localStorage.setItem("turnDirection", "right");
+      var dir = "right";
+      var r_turn = getPlayerTurn(undefined, "right");
+    }
+
+    return { r_turn, dir };
   };
 
   const getWinner = () => {
@@ -230,13 +260,51 @@ function App() {
     socket.emit("take_card", { room: room, gameDeck: newGameDeck, turn: turn });
   };
 
-  const getPlayerTurn = () => {
-    if (playerTurn < listUser.length - 1) {
-      setPlayerTurn(playerTurn + 1);
-      return playerTurn + 1;
+  const getPlayerTurn = (turn = null, direction = undefined) => {
+    const l_user = JSON.parse(localStorage.getItem("listUser"));
+    if (direction) {
+      var dir = direction
+      localStorage.setItem("turnDirection", direction);
     } else {
-      setPlayerTurn(0);
-      return 0;
+      var dir = localStorage.getItem("turnDirection");
+    }
+
+    if (dir == "right") {
+      if (turn == undefined) {
+        if (playerTurn < l_user.length - 1) {
+          setPlayerTurn(playerTurn + 1);
+          return playerTurn + 1;
+        } else {
+          setPlayerTurn(0);
+          return 0;
+        }
+      } else {
+        if (turn < l_user.length - 1) {
+          setPlayerTurn(turn + 1);
+          return turn + 1;
+        } else {
+          setPlayerTurn(0);
+          return 0;
+        }
+      }
+    } else {
+      if (turn == undefined) {
+        if (playerTurn > 0) {
+          setPlayerTurn(playerTurn - 1);
+          return playerTurn - 1;
+        } else {
+          setPlayerTurn(l_user.length - 1);
+          return l_user.length -1;
+        }
+      } else {
+        if (turn > 0) {
+          setPlayerTurn(turn - 1);
+          return turn - 1;
+        } else {
+          setPlayerTurn(l_user.length - 1);
+          return l_user.length - 1;
+        }
+      }
     }
   };
 
@@ -259,6 +327,8 @@ function App() {
         if (tempId == key) {
           localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
           localStorage.setItem("listUser", JSON.stringify(data.listUser));
+          localStorage.setItem("turnDirection", "right");
+
           setListUser(data.listUser);
           let a = localStorage.setItem(
             "playerDeck",
@@ -284,25 +354,30 @@ function App() {
 
     socket.on("player_draw_ws", (data) => {
       if (data.skip) {
-        let t = getPlayerTurn();
+        var listuser = JSON.parse(localStorage.getItem("listUser"));
+        var room = localStorage.getItem("room");
+        console.log("data turn", data.turn);
+        if (data.turn == listuser.indexOf(socket.id)) {
+          let t = getPlayerTurn(data.turn);
 
-        console.log("turn sapa", t);
-        
-        setIsSkipped(true);
-        setTimeout(() => {
-          setIsSkipped(false);
-        }, 3000);
+          console.log("turn sapa", t);
 
-        setGameDeck(data.gameDeck);
-        setCurrentCard(data.cardDrawed);
-        setPlayerTurn(t);
+          setIsSkipped(true);
+          setTimeout(() => {
+            setIsSkipped(false);
+          }, 3000);
 
-        socket.emit("player_draw", {
-          room: room,
-          cardDrawed: data.cardDrawed,
-          turn: t,
-          gameDeck: data.gameDeck,
-        });
+          setGameDeck(data.gameDeck);
+          setCurrentCard(data.cardDrawed);
+          setPlayerTurn(t);
+
+          socket.emit("player_draw", {
+            room: room,
+            cardDrawed: data.cardDrawed,
+            turn: t,
+            gameDeck: data.gameDeck,
+          });
+        }
       } else {
         var cd = data.cardDrawed;
         var p = false;
@@ -353,6 +428,10 @@ function App() {
       setPlayerTurn(data.turn);
       if (data.turn == list_user.indexOf(socket.id)) {
         console.log("plus_two_ws", data);
+        setIsPlusTwo(true);
+        setTimeout(() => {
+          setIsPlusTwo(false);
+        }, 3000);
 
         console.log("check 1 player deck", playerDeck);
 
@@ -395,6 +474,28 @@ function App() {
 
       localStorage.setItem("gameDeck", JSON.stringify(newGameDeck));
       setGameDeck(newGameDeck);
+    });
+
+    socket.on("player_draw_reverse_ws", (data) => {
+      localStorage.setItem("turnDirection", data.direction);
+      var cd = data.cardDrawed;
+      var p = false;
+      localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
+
+      let playerDeck = JSON.parse(localStorage.getItem("playerDeck"));
+
+      for (var i = 0; i < playerDeck.length; i++) {
+        if (playerDeck[i].color == cd.color || playerDeck[i].code == cd.code) {
+          p = true;
+          break;
+        }
+      }
+
+      setIsDrawable(p);
+
+      setGameDeck(data.gameDeck);
+      setCurrentCard(data.cardDrawed);
+      setPlayerTurn(data.turn);
     });
 
     socket.on("take_card_ws", (data) => {
@@ -643,7 +744,24 @@ function App() {
         </>
       )}
 
-      {isSkipped ? <><div className="fixed h-16 w-72 text-lg font-bold text-white mx-auto place-self-baseline inset-x-0 bottom-4 p-4 bg-red-500 rounded-lg shadow-md text-center">Your turn have been skipped !</div></> : ""}
+      {isSkipped ? (
+        <>
+          <div className="fixed h-16 w-72 text-lg font-bold text-white mx-auto place-self-baseline inset-x-0 bottom-4 p-4 bg-red-400 rounded-lg shadow-md text-center">
+            Your turn have been skipped !
+          </div>
+        </>
+      ) : (
+        ""
+      )}
+      {isPlusTwo ? (
+        <>
+          <div className="fixed h-16 w-72 text-lg font-bold text-white mx-auto place-self-baseline inset-x-0 bottom-4 p-4 bg-yellow-400 rounded-lg shadow-md text-center">
+            Your card deck + 2
+          </div>
+        </>
+      ) : (
+        ""
+      )}
     </>
   );
 }
