@@ -5,9 +5,12 @@ import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
 import Login from "./ModalLogin";
 import Room from "./page/Room";
 import ModalLogin from "./ModalLogin";
-import { Button, Card, Spinner } from "flowbite-react";
+import { Button, Card, Spinner, Modal } from "flowbite-react";
 import { deck } from "./Deck";
 import { defaultCard } from "./Deck";
+import { data } from "autoprefixer";
+
+/// TO BE CONTINUED AT BLACK CARD FEATURE
 
 const socket = io.connect("http://localhost:3001");
 
@@ -48,6 +51,14 @@ function App() {
   const [isDrawable, setIsDrawable] = useState();
   const [isSkipped, setIsSkipped] = useState(false);
   const [isPlusTwo, setIsPlusTwo] = useState(false);
+  const [isOpenChangeColor, setToggleChangeColor] = useState(false);
+  const [cardChangeColor, setCardChangeColor] = useState({
+    idx: null,
+    color: "",
+    classname: "border-4 border-black rounded-md",
+  });
+
+  console.log("cardChangeColor", cardChangeColor);
 
   console.log("isDrawable", isDrawable);
 
@@ -157,6 +168,46 @@ function App() {
     });
   };
 
+  const drawCardChangeColor = (index) => {
+    setCardChangeColor({
+      ...cardChangeColor,
+      idx: index,
+    })
+    setToggleChangeColor(true);
+  };
+
+  const submitColor = () => {
+    let tempPDeck = playerDeck;
+    let passCard = tempPDeck[cardChangeColor.idx];
+    let tempGameDeck = JSON.parse(localStorage.getItem("gameDeck"));
+
+    tempPDeck = tempPDeck.filter((data, idx) => idx != cardChangeColor.idx);
+    setPlayerDeck(tempPDeck);
+    localStorage.setItem("playerDeck", JSON.stringify(tempPDeck));
+    tempGameDeck.push(playerDeck[cardChangeColor.idx]);
+
+    localStorage.setItem("gameDeck", JSON.stringify(tempGameDeck));
+
+    setCurrentCard(playerDeck[cardChangeColor.idx]);
+
+    let turn = getPlayerTurn();
+
+    if (tempPDeck.length == 0) {
+      getWinner();
+    }
+
+    // socket.emit("player_draw_change_color", {
+    //   room: room,
+    //   cardDrawed: passCard,
+    //   turn: r_turn,
+    //   direction: dir,
+    //   gameDeck: tempGameDeck,
+    // });
+
+    
+
+  }
+
   const drawCard = (index) => {
     let tempPDeck = playerDeck;
     let passCard = tempPDeck[index];
@@ -197,6 +248,14 @@ function App() {
     } else if (passCard.code == "R") {
       var { r_turn, dir } = getReverseTurn();
       socket.emit("player_draw_reverse", {
+        room: room,
+        cardDrawed: passCard,
+        turn: r_turn,
+        direction: dir,
+        gameDeck: tempGameDeck,
+      });
+    } else if (passCard.code == "C") {
+      socket.emit("player_draw_change_color", {
         room: room,
         cardDrawed: passCard,
         turn: r_turn,
@@ -553,6 +612,65 @@ function App() {
   return (
     <>
       <ModalLogin joinRoom={joinRoom} />
+      <Modal show={isOpenChangeColor} size="md" onClose={""}>
+        <Modal.Body>
+          <div className="w-90 flex flex-row justify-center items-center">
+            <div className="flex flex-col justify-center items-center ">
+              <h1 className="font-bold text-2xl mb-6 text-gray-600">
+                Choose color
+              </h1>
+              <div
+                className={
+                  `flex flex-row justify-center items-center gap-x-8 mb-4` +
+                  cardChangeColor.classname
+                }
+              >
+                {defaultCard.map((card) => {
+                  return (
+                    <>
+                      {card.color == cardChangeColor.color ? (
+                        <>
+                          <img
+                            src={card.img}
+                            width="50"
+                            className={`` + cardChangeColor.classname}
+                            onClick={() =>
+                              setCardChangeColor({
+                                ...cardChangeColor,
+                                color: card.color
+                              })
+                            }
+                          ></img>
+                        </>
+                      ) : (
+                        <>
+                          <img
+                            src={card.img}
+                            width="50"
+                            className={""}
+                            onClick={() =>
+                              setCardChangeColor({
+                                ...cardChangeColor,
+                                color: card.color
+                              })
+                            }
+                          ></img>
+                        </>
+                      )}
+                    </>
+                  );
+                })}
+              </div>
+
+              <br></br>
+
+              <Button color={"info"} className="mt-4" onClick={() => submitColor()}>
+                Ok !
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>{" "}
       {gameCanvas ? (
         <>
           <div className="w-screen h-screen flex flex-col justify-center items-center">
@@ -672,15 +790,33 @@ function App() {
                                       data.code == "C" ||
                                       data.color == "X" ? (
                                         <>
-                                          <div
-                                            onClick={() => drawCard(idx)}
-                                            className="p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
-                                          >
-                                            <img
-                                              src={data.img}
-                                              width="50"
-                                            ></img>
-                                          </div>
+                                          {data.code == "C" ? (
+                                            <>
+                                              <div
+                                                onClick={() =>
+                                                  drawCardChangeColor(idx)
+                                                }
+                                                className="p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
+                                              >
+                                                <img
+                                                  src={data.img}
+                                                  width="50"
+                                                ></img>
+                                              </div>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <div
+                                                onClick={() => drawCard(idx)}
+                                                className="p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
+                                              >
+                                                <img
+                                                  src={data.img}
+                                                  width="50"
+                                                ></img>
+                                              </div>
+                                            </>
+                                          )}
                                         </>
                                       ) : (
                                         <>
@@ -768,7 +904,6 @@ function App() {
           )}
         </>
       )}
-
       {isSkipped ? (
         <>
           <div className="fixed h-16 w-72 text-lg font-bold text-white mx-auto place-self-baseline inset-x-0 bottom-4 p-4 bg-red-400 rounded-lg shadow-md text-center">
