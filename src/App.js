@@ -263,7 +263,7 @@ function App() {
   const getPlayerTurn = (turn = null, direction = undefined) => {
     const l_user = JSON.parse(localStorage.getItem("listUser"));
     if (direction) {
-      var dir = direction
+      var dir = direction;
       localStorage.setItem("turnDirection", direction);
     } else {
       var dir = localStorage.getItem("turnDirection");
@@ -294,7 +294,7 @@ function App() {
           return playerTurn - 1;
         } else {
           setPlayerTurn(l_user.length - 1);
-          return l_user.length -1;
+          return l_user.length - 1;
         }
       } else {
         if (turn > 0) {
@@ -388,7 +388,9 @@ function App() {
         for (var i = 0; i < playerDeck.length; i++) {
           if (
             playerDeck[i].color == cd.color ||
-            playerDeck[i].code == cd.code
+            playerDeck[i].code == cd.code ||
+            playerDeck[i].code == "C" ||
+            playerDeck[i].color == "X"
           ) {
             p = true;
             break;
@@ -414,7 +416,12 @@ function App() {
       let playerDeck = JSON.parse(localStorage.getItem("playerDeck"));
 
       for (var i = 0; i < playerDeck.length; i++) {
-        if (playerDeck[i].color == cd.color || playerDeck[i].code == cd.code) {
+        if (
+          playerDeck[i].color == cd.color ||
+          playerDeck[i].code == cd.code ||
+          playerDeck[i].code == "C" ||
+          playerDeck[i].color == "X"
+        ) {
           p = true;
           break;
         }
@@ -485,7 +492,12 @@ function App() {
       let playerDeck = JSON.parse(localStorage.getItem("playerDeck"));
 
       for (var i = 0; i < playerDeck.length; i++) {
-        if (playerDeck[i].color == cd.color || playerDeck[i].code == cd.code) {
+        if (
+          playerDeck[i].color == cd.color ||
+          playerDeck[i].code == cd.code ||
+          playerDeck[i].code == "C" ||
+          playerDeck[i].color == "X"
+        ) {
           p = true;
           break;
         }
@@ -522,7 +534,9 @@ function App() {
       for (var i = 0; i < playerDeck.length; i++) {
         if (
           playerDeck[i].color == currentCard.color ||
-          playerDeck[i].code == currentCard.code
+          playerDeck[i].code == currentCard.code ||
+          playerDeck[i].code == "C" ||
+          playerDeck[i].color == "X"
         ) {
           p = true;
           break;
@@ -645,7 +659,9 @@ function App() {
                                   listUser.indexOf(socket.id) ? (
                                     <>
                                       {currentCard.color == data.color ||
-                                      currentCard.code == data.code ? (
+                                      currentCard.code == data.code ||
+                                      data.code == "C" ||
+                                      data.color == "X" ? (
                                         <>
                                           <div
                                             onClick={() => drawCard(idx)}

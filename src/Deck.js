@@ -279,26 +279,26 @@ export const deck = [
     //     code: "p4",
     //     img: "./images/w2.png"
     // },
-    // {
-    //     color: "X",
-    //     code: "C",
-    //     img: "./images/wc1.png"
-    // },
-    // {
-    //     color: "X",
-    //     code: "C",
-    //     img: "./images/wc1.png"
-    // },
-    // {
-    //     color: "X",
-    //     code: "C",
-    //     img: "./images/wc1.png"
-    // },
-    // {
-    //     color: "X",
-    //     code: "C",
-    //     img: "./images/wc1.png"
-    // },
+    {
+        color: "X",
+        code: "C",
+        img: "./images/wc1.png"
+    },
+    {
+        color: "X",
+        code: "C",
+        img: "./images/wc1.png"
+    },
+    {
+        color: "X",
+        code: "C",
+        img: "./images/wc1.png"
+    },
+    {
+        color: "X",
+        code: "C",
+        img: "./images/wc1.png"
+    },
 
 
 
