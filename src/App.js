@@ -7,6 +7,7 @@ import Room from "./page/Room";
 import ModalLogin from "./ModalLogin";
 import { Button, Card, Spinner } from "flowbite-react";
 import { deck } from "./Deck";
+import { defaultCard } from "./Deck";
 
 const socket = io.connect("http://localhost:3001");
 
@@ -606,8 +607,16 @@ function App() {
                         <>
                           {isStart ? (
                             <>
-                              <div className="p-2 m-2 shadow-md rounded-lg w-32 flex justify-center mb-20">
-                                <img src={currentCard.img} width="100"></img>
+                              <div className="flex flex-row justify-center items-center mb-20 gap-x-4">
+                                <div className="p-2 m-2 shadow-md rounded-lg w-32 flex justify-center ">
+                                  <img src={currentCard.img} width="100"></img>
+                                </div>
+                                <div className="w-20 ">
+                                  <img
+                                    src={defaultCard[1].img}
+                                    width="50"
+                                  ></img>
+                                </div>
                               </div>
                             </>
                           ) : (
