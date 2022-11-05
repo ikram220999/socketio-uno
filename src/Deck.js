@@ -304,18 +304,22 @@ export const deck = [
 
 export const defaultCard = [
     {
+        id: 0,
         color: "B",
         img: "./images/bD-1.png"
     },
     {
+        id: 1,
         color: "G",
         img: "./images/gD-1.png"
     },
     {
+        id: 2,
         color: "R",
         img: "./images/rD-1.png"
     },
     {
+        id: 3,
         color: "Y",
         img: "./images/yD-1.png"
     },

@@ -1,6 +1,6 @@
 import "./App.css";
 import io from "socket.io-client";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
 import Login from "./ModalLogin";
 import Room from "./page/Room";
@@ -54,7 +54,8 @@ function App() {
   const [isOpenChangeColor, setToggleChangeColor] = useState(false);
   const [cardChangeColor, setCardChangeColor] = useState({
     idx: null,
-    color: "",
+    color: null,
+    color_card: "",
     classname: "border-4 border-black rounded-md",
   });
 
@@ -172,7 +173,7 @@ function App() {
     setCardChangeColor({
       ...cardChangeColor,
       idx: index,
-    })
+    });
     setToggleChangeColor(true);
   };
 
@@ -189,6 +190,7 @@ function App() {
     localStorage.setItem("gameDeck", JSON.stringify(tempGameDeck));
 
     setCurrentCard(playerDeck[cardChangeColor.idx]);
+    setToggleChangeColor(false);
 
     let turn = getPlayerTurn();
 
@@ -196,22 +198,36 @@ function App() {
       getWinner();
     }
 
-    // socket.emit("player_draw_change_color", {
-    //   room: room,
-    //   cardDrawed: passCard,
-    //   turn: r_turn,
-    //   direction: dir,
-    //   gameDeck: tempGameDeck,
-    // });
+    // setCardChangeColor({
+    //   ...cardChangeColor,
+    //   idx
+    // })
 
-    
+    socket.emit("player_draw_change_color", {
+      room: room,
+      cardDrawed: passCard,
+      turn: turn,
+      gameDeck: tempGameDeck,
+      changeColor: cardChangeColor.color,
+      cardColor: cardChangeColor.color_card,
+    });
+  };
 
-  }
+  const smallCard = () => {
+    return <React.Fragment></React.Fragment>;
+  };
 
   const drawCard = (index) => {
     let tempPDeck = playerDeck;
     let passCard = tempPDeck[index];
     let tempGameDeck = JSON.parse(localStorage.getItem("gameDeck"));
+
+    setCardChangeColor({
+      idx: null,
+      color: null,
+      color_card: "",
+      classname: "border-4 border-black rounded-md",
+    });
 
     tempPDeck = tempPDeck.filter((data, idx) => idx != index);
     setPlayerDeck(tempPDeck);
@@ -413,6 +429,14 @@ function App() {
     });
 
     socket.on("player_draw_ws", (data) => {
+
+      setCardChangeColor({
+        idx: null,
+        color: null,
+        color_card: "",
+        classname: "border-4 border-black rounded-md",
+      });
+
       if (data.skip) {
         var listuser = JSON.parse(localStorage.getItem("listUser"));
         var room = localStorage.getItem("room");
@@ -466,6 +490,13 @@ function App() {
     });
 
     socket.on("plus_two_ws", (data) => {
+
+      setCardChangeColor({
+        idx: null,
+        color: null,
+        color_card: "",
+        classname: "border-4 border-black rounded-md",
+      });
       // setPlayerTurn(data)
       localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
       var room = localStorage.getItem("room");
@@ -536,6 +567,7 @@ function App() {
     });
 
     socket.on("minus_two_after_player_add_ws", (data) => {
+      
       let newGameDeck = data;
       console.log("new game Deck", data);
 
@@ -544,6 +576,14 @@ function App() {
     });
 
     socket.on("player_draw_reverse_ws", (data) => {
+
+      setCardChangeColor({
+        idx: null,
+        color: null,
+        color_card: "",
+        classname: "border-4 border-black rounded-md",
+      });
+      
       localStorage.setItem("turnDirection", data.direction);
       var cd = data.cardDrawed;
       var p = false;
@@ -568,6 +608,44 @@ function App() {
       setGameDeck(data.gameDeck);
       setCurrentCard(data.cardDrawed);
       setPlayerTurn(data.turn);
+    });
+
+    socket.on("player_draw_change_color_ws", (data) => {
+      var cd = data.cardDrawed;
+      var p = false;
+      localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
+
+      let playerDeck = JSON.parse(localStorage.getItem("playerDeck"));
+
+      for (var i = 0; i < playerDeck.length; i++) {
+        if (
+          playerDeck[i].color == cd.color ||
+          playerDeck[i].code == cd.code ||
+          playerDeck[i].code == "C" ||
+          playerDeck[i].color == "X"
+        ) {
+          p = true;
+          break;
+        }
+      }
+
+      setIsDrawable(p);
+      let tempObj = {};
+
+      tempObj["color"] = data.cardColor;
+      tempObj["code"] = data.cardDrawed.code;
+      tempObj["img"] = data.cardDrawed.img;
+
+      console.log("apa data cardDrawed", data.cardDrawed);
+
+      setGameDeck(data.gameDeck);
+      setCurrentCard(tempObj);
+      setPlayerTurn(data.turn);
+      setCardChangeColor({
+        ...cardChangeColor,
+        color: data.changeColor,
+        color_card: data.cardColor,
+      });
     });
 
     socket.on("take_card_ws", (data) => {
@@ -625,7 +703,7 @@ function App() {
                   cardChangeColor.classname
                 }
               >
-                {defaultCard.map((card) => {
+                {defaultCard.map((card, idx) => {
                   return (
                     <>
                       {card.color == cardChangeColor.color ? (
@@ -637,7 +715,8 @@ function App() {
                             onClick={() =>
                               setCardChangeColor({
                                 ...cardChangeColor,
-                                color: card.color
+                                color: card.id,
+                                color_card: card.color,
                               })
                             }
                           ></img>
@@ -651,7 +730,8 @@ function App() {
                             onClick={() =>
                               setCardChangeColor({
                                 ...cardChangeColor,
-                                color: card.color
+                                color: card.id,
+                                color_card: card.color,
                               })
                             }
                           ></img>
@@ -664,7 +744,11 @@ function App() {
 
               <br></br>
 
-              <Button color={"info"} className="mt-4" onClick={() => submitColor()}>
+              <Button
+                color={"info"}
+                className="mt-4"
+                onClick={() => submitColor()}
+              >
                 Ok !
               </Button>
             </div>
@@ -729,12 +813,21 @@ function App() {
                                 <div className="p-2 m-2 shadow-md rounded-lg w-32 flex justify-center ">
                                   <img src={currentCard.img} width="100"></img>
                                 </div>
-                                <div className="w-20 ">
-                                  <img
-                                    src={defaultCard[1].img}
-                                    width="50"
-                                  ></img>
-                                </div>
+                                {cardChangeColor.color != null ? (
+                                  <>
+                                    <div className="w-20 ">
+                                      {/* card kecil */}
+                                      <img
+                                        src={
+                                          defaultCard[cardChangeColor.color].img
+                                        }
+                                        width="50"
+                                      ></img>
+                                    </div>
+                                  </>
+                                ) : (
+                                  ""
+                                )}
                               </div>
                             </>
                           ) : (
@@ -752,8 +845,25 @@ function App() {
                         <>
                           {isStart ? (
                             <>
-                              <div className="p-2 m-2 shadow-md rounded-lg w-32 flex justify-center mb-20">
-                                <img src={currentCard.img} width="100"></img>
+                              <div className="flex flex-row justify-center items-center mb-20 gap-x-4">
+                                <div className="p-2 m-2 shadow-md rounded-lg w-32 flex justify-center ">
+                                  <img src={currentCard.img} width="100"></img>
+                                </div>
+                                {cardChangeColor.color != null ? (
+                                  <>
+                                    <div className="w-20 ">
+                                      {/* card kecil */}
+                                      <img
+                                        src={
+                                          defaultCard[cardChangeColor.color].img
+                                        }
+                                        width="50"
+                                      ></img>
+                                    </div>
+                                  </>
+                                ) : (
+                                  ""
+                                )}
                               </div>
                             </>
                           ) : (
