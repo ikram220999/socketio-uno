@@ -12,7 +12,7 @@ import { data } from "autoprefixer";
 
 /// TO BE CONTINUED AT BLACK CARD FEATURE
 
-const socket = io("https://uno-socketio.herokuapp.com");
+const socket = io.connect("https://uno-socketio.herokuapp.com");
 
 let g = localStorage.getItem("gameDeck");
 if (g) {
