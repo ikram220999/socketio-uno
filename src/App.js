@@ -1,5 +1,5 @@
 import "./App.css";
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
 import Login from "./ModalLogin";
@@ -13,6 +13,8 @@ import { data } from "autoprefixer";
 /// TO BE CONTINUED AT BLACK CARD FEATURE
 
 const socket = io("https://uno-socketio.herokuapp.com");
+// const socket = io("http://localhost:3001");
+
 
 let g = localStorage.getItem("gameDeck");
 if (g) {
@@ -335,6 +337,11 @@ function App() {
 
     socket.emit("take_card", { room: room, gameDeck: newGameDeck, turn: turn });
   };
+
+  const resetGame = () => {
+    localStorage.clear()
+    window.location.reload();
+  }
 
   const getPlayerTurn = (turn = null, direction = undefined) => {
     const l_user = JSON.parse(localStorage.getItem("listUser"));
@@ -689,6 +696,10 @@ function App() {
 
   return (
     <>
+
+    <button className="fixed bottom-2 right-2 bg-gray-400 py-3 px-5 text-white rounded-md hover:bg-gray-600
+    
+    " onClick={() => resetGame()}>Reset</button>
       <ModalLogin joinRoom={joinRoom} />
       <Modal show={isOpenChangeColor} size="md" onClose={""}>
         <Modal.Body>
