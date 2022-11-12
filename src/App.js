@@ -9,6 +9,7 @@ import { Button, Card, Spinner, Modal } from "flowbite-react";
 import { deck } from "./Deck";
 import { defaultCard } from "./Deck";
 import { data } from "autoprefixer";
+import PlayerList from "./playerlist";
 
 /// TO BE CONTINUED AT BLACK CARD FEATURE
 
@@ -348,6 +349,15 @@ function App() {
     localStorage.clear();
     window.location.reload();
   };
+
+  const userList = () => {
+    let obj = {};
+    var a = JSON.parse(localStorage.getItem("listUser"));
+    var b = localStorage.getItem("turnDirection");
+    var c = playerTurn;
+    // obj["turnDirection"] = b;
+    return c;
+  }
 
   const getPlayerTurn = (turn = null, direction = undefined) => {
     const l_user = JSON.parse(localStorage.getItem("listUser"));
@@ -824,7 +834,9 @@ function App() {
         <>
           {showGame ? (
             <>
+              
               <div className="w-full h-full my-10 flex flex-col justify-center items-center">
+                <PlayerList turn={playerTurn}/>
                 <div className="w-3/4 justify-center items-center">
                   <Card>
                     <div className="flex flex-col justify-center items-center">
