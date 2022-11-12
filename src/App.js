@@ -971,7 +971,7 @@ function App() {
                                             <img
                                               src={data.img}
                                               width="50"
-                                              className="xs:w-16 sm:w-14"
+                                              className="xs:w-16 sm:w-16"
                                             ></img>
                                           </div>
                                         </>
@@ -994,20 +994,23 @@ function App() {
                       </div>
                       {playerTurn === listUser.indexOf(socket.id) ? (
                         <>
-                          <br></br>
-                          <br></br>
-                          {isDrawable == false ? (
+                      
+                          {/* {isDrawable == false ? ( */}
                             <>
+                            <div className="mt-10">
+
                               <Button
                                 color={"warning"}
                                 onClick={() => takeCard()}
-                              >
+                                className="m-4"
+                                >
                                 Take one card !
                               </Button>
+                                </div>
                             </>
-                          ) : (
+                          {/* ) : ( */}
                             <></>
-                          )}
+                          {/* )} */}
                         </>
                       ) : (
                         ""
