@@ -28,11 +28,11 @@ function ModalLogin({ joinRoom }) {
     <>
     <Modal
     show={isOpen}
-    size="md"
+    size="sm"
     onClose={""}
   >
     <Modal.Body>
-    <div className="w-90 flex flex-row justify-center items-center">
+    <div className="w-90 xs: flex flex-row justify-center items-center">
         <div className="flex flex-col justify-center items-center">
           <h1 className="font-bold text-2xl mb-6 text-gray-600">UNO</h1>
           <input
