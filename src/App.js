@@ -15,7 +15,6 @@ import { data } from "autoprefixer";
 const socket = io("https://uno-socketio.herokuapp.com");
 // const socket = io("http://localhost:3001");
 
-
 let g = localStorage.getItem("gameDeck");
 if (g) {
 } else {
@@ -60,7 +59,7 @@ function App() {
     color_card: "",
     classname: "border-4 border-black rounded-md",
   });
-  const [name, setName] = useState("")
+  const [name, setName] = useState("");
 
   console.log("cardChangeColor", cardChangeColor);
 
@@ -84,7 +83,7 @@ function App() {
   const joinRoom = (room, name) => {
     localStorage.setItem("room", room);
     localStorage.setItem("name", name);
-    setName(name)
+    setName(name);
     setRoom(room);
     setGameCanvas(true);
     setIsPlayer(true);
@@ -197,7 +196,7 @@ function App() {
     let a = {};
     a["code"] = "C";
     a["color"] = cardChangeColor.color_card;
-    a["img"] = playerDeck[cardChangeColor.idx].img
+    a["img"] = playerDeck[cardChangeColor.idx].img;
     setCurrentCard(a);
     setToggleChangeColor(false);
 
@@ -346,9 +345,9 @@ function App() {
   };
 
   const resetGame = () => {
-    localStorage.clear()
+    localStorage.clear();
     window.location.reload();
-  }
+  };
 
   const getPlayerTurn = (turn = null, direction = undefined) => {
     const l_user = JSON.parse(localStorage.getItem("listUser"));
@@ -443,7 +442,6 @@ function App() {
     });
 
     socket.on("player_draw_ws", (data) => {
-
       setCardChangeColor({
         idx: null,
         color: null,
@@ -504,7 +502,6 @@ function App() {
     });
 
     socket.on("plus_two_ws", (data) => {
-
       setCardChangeColor({
         idx: null,
         color: null,
@@ -581,7 +578,6 @@ function App() {
     });
 
     socket.on("minus_two_after_player_add_ws", (data) => {
-      
       let newGameDeck = data;
       console.log("new game Deck", data);
 
@@ -590,14 +586,13 @@ function App() {
     });
 
     socket.on("player_draw_reverse_ws", (data) => {
-
       setCardChangeColor({
         idx: null,
         color: null,
         color_card: "",
         classname: "border-4 border-black rounded-md",
       });
-      
+
       localStorage.setItem("turnDirection", data.direction);
       var cd = data.cardDrawed;
       var p = false;
@@ -703,10 +698,20 @@ function App() {
 
   return (
     <>
-
-    <button className="fixed bottom-2 right-2 bg-gray-400 py-3 px-5 text-white rounded-md hover:bg-gray-600
+      {isStart ? (
+        <>
+          <button
+            className="fixed bottom-2 right-2 bg-gray-400 py-3 px-5 text-white rounded-md hover:bg-gray-600
     
-    " onClick={() => resetGame()}>Reset</button>
+    "
+            onClick={() => resetGame()}
+          >
+            Reset
+          </button>
+        </>
+      ) : (
+        ""
+      )}
       <ModalLogin joinRoom={joinRoom} />
       <Modal show={isOpenChangeColor} size="md" onClose={""}>
         <Modal.Body>
