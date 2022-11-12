@@ -711,7 +711,7 @@ function App() {
       {isStart ? (
         <>
           <button
-            className=" xs:text-sm xs:py-2 xs:px-4 fixed bottom-2 right-2 bg-gray-400 py-3 px-5 text-white rounded-md hover:bg-gray-600
+            className=" xs:text-sm xs:py-2 xs:px-4 sm:text-sm sm:py-2 sm:px-4 fixed bottom-2 right-2 bg-gray-400 py-3 px-5 text-white rounded-md hover:bg-gray-600
     
     "
             onClick={() => resetGame()}
@@ -791,7 +791,7 @@ function App() {
       {gameCanvas ? (
         <>
           <div className="w-screen h-screen flex flex-col justify-center items-center">
-            <div className="w-1/2 xs:w-3/4 justify-center items-center">
+            <div className="w-1/2 xs:w-3/4 sm:w-3/4 justify-center items-center">
               <Card>
                 <div className="flex flex-col justify-center items-center">
                   {isHost ? (
@@ -806,7 +806,7 @@ function App() {
                       <br></br>
                       <button
                         onClick={() => gameStart()}
-                        className="bg-red-500 py-3 px-5 font-bold rounded-md text-white xs:text-sm hover:opacity-90"
+                        className="bg-red-500 py-3 px-5 font-bold rounded-md text-white xs:text-sm sm:text-sm hover:opacity-90"
                       >
                         START NOW !
                       </button>
@@ -816,7 +816,7 @@ function App() {
                       {isPlayer ? (
                         <>
                           <Spinner color={"failure"}></Spinner>
-                          <h3 className="font-semibold mt-2 xs:text-sm">
+                          <h3 className="font-semibold mt-2 xs:text-sm sm:text-sm">
                             Waiting the host to start game
                           </h3>{" "}
                         </>
@@ -835,9 +835,9 @@ function App() {
           {showGame ? (
             <>
               
-              <div className="w-full h-full my-10 xs:my-0 xs:h-screen flex flex-col justify-center items-center">
+              <div className="w-full h-full my-10 xs:my-0 xs:h-screen sm:my-0 sm:h-screen flex flex-col justify-center items-center">
                 <PlayerList turn={playerTurn}/>
-                <div className="w-3/4 xs:w-full justify-center items-center">
+                <div className="w-3/4 xs:w-full sm:w-full justify-center items-center">
                   <Card>
                     <div className="flex flex-col justify-center items-center">
                       {isHost ? (
@@ -881,7 +881,7 @@ function App() {
                           {isStart ? (
                             <>
                               <div className="flex flex-row justify-center items-center mb-12 gap-x-4">
-                                <div className="p-2 m-2 shadow-md rounded-lg w-32 xs:w-24 flex justify-center ">
+                                <div className="p-2 m-2 shadow-md rounded-lg w-32 xs:w-24 sm:w-24 flex justify-center ">
                                   <img src={currentCard.img} width="100"></img>
                                 </div>
                                 {cardChangeColor.color != null ? (
@@ -908,13 +908,13 @@ function App() {
                       )}
                       {playerTurn === listUser.indexOf(socket.id) ? (
                         <>
-                          <h3 className="font-semibold mb-3 text-green-400 xs:text-sm">
+                          <h3 className="font-semibold mb-3 text-green-400 xs:text-sm sm:text-sm">
                             Its your turn, please draw a card
                           </h3>
                         </>
                       ) : (
                         <>
-                          <h3 className="font-semibold mb-3 text-red-600 xs:text-sm">
+                          <h3 className="font-semibold mb-3 text-red-600 xs:text-sm sm:text-sm">
                             Its not your turn, please wait
                           </h3>
                         </>
@@ -941,12 +941,12 @@ function App() {
                                                 onClick={() =>
                                                   drawCardChangeColor(idx)
                                                 }
-                                                className="xs:w-14 p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
+                                                className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
                                               >
                                                 <img
                                                   src={data.img}
                                                   width="50"
-                                                  className="xs:w-16"
+                                                  className="xs:w-16 sm:w-16"
                                                 ></img>
                                               </div>
                                             </>
@@ -954,12 +954,12 @@ function App() {
                                             <>
                                               <div
                                                 onClick={() => drawCard(idx)}
-                                                className="xs:w-14 p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
+                                                className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
                                               >
                                                 <img
                                                   src={data.img}
                                                   width="50"
-                                                  className="xs:w-16"
+                                                  className="xs:w-16 sm:w-16"
                                                 ></img>
                                               </div>
                                             </>
@@ -967,11 +967,11 @@ function App() {
                                         </>
                                       ) : (
                                         <>
-                                          <div className="xs:w-14 p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
+                                          <div className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
                                             <img
                                               src={data.img}
                                               width="50"
-                                              className="xs:w-16"
+                                              className="xs:w-16 sm:w-14"
                                             ></img>
                                           </div>
                                         </>
@@ -979,8 +979,8 @@ function App() {
                                     </>
                                   ) : (
                                     <>
-                                      <div className="xs:w-14 p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
-                                        <img src={data.img} width="50" className="xs:w-16"></img>
+                                      <div className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
+                                        <img src={data.img} width="50" className="xs:w-16 sm:w-16"></img>
                                       </div>
                                     </>
                                   )}
@@ -1054,7 +1054,7 @@ function App() {
       )}
       {isSkipped ? (
         <>
-          <div className="h-16 fixed w-72 text-lg xs:h-auto xs:w-60 xs:text-sm font-bold text-white mx-auto inset-x-0 bottom-4 py-3 bg-red-500 rounded-lg shadow-md text-center align-middle">
+          <div className="h-16 fixed w-72 text-lg xs:h-auto xs:w-60 xs:text-sm sm:h-auto sm:w-60 sm:text-sm font-bold text-white mx-auto inset-x-0 bottom-4 py-3 bg-red-500 rounded-lg shadow-md text-center align-middle">
             Your turn have been skipped !
           </div>
         </>
@@ -1063,7 +1063,7 @@ function App() {
       )}
       {isPlusTwo ? (
         <>
-          <div className=" h-16 fixed w-72 text-lg xs:h-auto xs:w-60 xs:text-sm font-bold text-white mx-auto inset-x-0 bottom-4 py-3 bg-yellow-400 rounded-lg shadow-md text-center align-middle">
+          <div className=" h-16 fixed w-72 text-lg xs:h-auto xs:w-60 xs:text-sm sm:h-auto sm:w-60 sm:text-sm font-bold text-white mx-auto inset-x-0 bottom-4 py-3 bg-yellow-400 rounded-lg shadow-md text-center align-middle">
             Your card deck + 2
           </div>
         </>
