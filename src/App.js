@@ -60,6 +60,7 @@ function App() {
     color_card: "",
     classname: "border-4 border-black rounded-md",
   });
+  const [name, setName] = useState("")
 
   console.log("cardChangeColor", cardChangeColor);
 
@@ -80,8 +81,10 @@ function App() {
 
   console.log("cur_card", currentCard);
 
-  const joinRoom = (room) => {
+  const joinRoom = (room, name) => {
     localStorage.setItem("room", room);
+    localStorage.setItem("name", name);
+    setName(name)
     setRoom(room);
     setGameCanvas(true);
     setIsPlayer(true);
@@ -191,7 +194,11 @@ function App() {
 
     localStorage.setItem("gameDeck", JSON.stringify(tempGameDeck));
 
-    setCurrentCard(playerDeck[cardChangeColor.idx]);
+    let a = {};
+    a["code"] = "C";
+    a["color"] = cardChangeColor.color_card;
+    a["img"] = playerDeck[cardChangeColor.idx].img
+    setCurrentCard(a);
     setToggleChangeColor(false);
 
     let turn = getPlayerTurn();
