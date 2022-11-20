@@ -23,6 +23,7 @@ if (g) {
 }
 
 localStorage.setItem("playerDeck", null);
+localStorage.setItem("usernameList", null);
 
 function App() {
   let id = "";
@@ -61,6 +62,7 @@ function App() {
     classname: "border-4 border-black rounded-md",
   });
   const [name, setName] = useState("");
+  const [usernameList, setUsernameList] = useState([]);
 
   console.log("cardChangeColor", cardChangeColor);
 
@@ -84,27 +86,58 @@ function App() {
   const joinRoom = (room, name) => {
     localStorage.setItem("room", room);
     localStorage.setItem("name", name);
+    var list = null;
+    var j = JSON.parse(localStorage.getItem("usernameList"));
+    console.log("kambing");
+    if (j != null) {
+      j.push(name);
+      localStorage.setItem("usernameList", JSON.stringify(j));
+      list = j;
+    } else {
+      var jarr = [];
+      jarr.push(name);
+      localStorage.setItem("usernameList", JSON.stringify(jarr));
+      list = jarr;
+    }
     setName(name);
+    setUsernameList(j);
     setRoom(room);
     setGameCanvas(true);
     setIsPlayer(true);
 
-    socket.emit("join_room", room);
+    socket.emit("join_room", { room: room, name: name });
   };
 
   console.log("id saya", id);
 
   const newUser = () => {
     socket.on("user_join", (data) => {
-      console.log("new user", data);
-      setUser(data);
+      console.log("new user", data.id);
+      setUser(data.id);
+
+      var list = null;
+      var j = JSON.parse(localStorage.getItem("usernameList"));
+      console.log("kambing");
+      if (j != null) {
+        j.push(data.name);
+        localStorage.setItem("usernameList", JSON.stringify(j));
+        list = j;
+      } else {
+        var jarr = [];
+        jarr.push(data.name);
+        localStorage.setItem("usernameList", JSON.stringify(jarr));
+        list = jarr;
+      }
+
     });
   };
 
   const getlistUser = () => {
     socket.on("list_user", (data) => {
       console.log("list user", data);
-      setListUser(data);
+      setListUser(data.c);
+
+      // setUsernameList(list);
     });
   };
 
@@ -140,6 +173,7 @@ function App() {
     // setGameDeck(deckTemp);
 
     localStorage.setItem("turnDirection", "right");
+    var h = JSON.parse(localStorage.getItem("usernameList"))
 
     console.log("gameDeck lepas agih", deckTemp);
     console.log("senarai kad bagi setiap user", obj);
@@ -149,6 +183,7 @@ function App() {
       started: true,
       cardPlayer: obj,
       listUser: listUser,
+      listUsername: h,
       gameDeck: deckTemp,
     });
 
@@ -316,10 +351,12 @@ function App() {
   };
 
   const getWinner = () => {
+
+    var a = localStorage.getItem("name")
     // if (playerDeck.length == 0) {
-    socket.emit("winner", { room: room, winnerId: socket.id });
+    socket.emit("winner", { room: room, winnerId: a });
     setShowGame(false);
-    setWinner(socket.id);
+    setWinner(a);
 
     // }
   };
@@ -357,7 +394,7 @@ function App() {
     var c = playerTurn;
     // obj["turnDirection"] = b;
     return c;
-  }
+  };
 
   const getPlayerTurn = (turn = null, direction = undefined) => {
     const l_user = JSON.parse(localStorage.getItem("listUser"));
@@ -426,6 +463,7 @@ function App() {
         if (tempId == key) {
           localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
           localStorage.setItem("listUser", JSON.stringify(data.listUser));
+          localStorage.setItem("usernameList", JSON.stringify(data.usernameList));
           localStorage.setItem("turnDirection", "right");
 
           setListUser(data.listUser);
@@ -834,9 +872,8 @@ function App() {
         <>
           {showGame ? (
             <>
-              
               <div className="w-full h-full my-10 xs:my-0 xs:h-screen sm:my-0 sm:h-screen flex flex-col justify-center items-center">
-                <PlayerList turn={playerTurn}/>
+                <PlayerList turn={playerTurn} />
                 <div className="w-3/4 xs:w-full sm:w-full justify-center items-center">
                   <Card>
                     <div className="flex flex-col justify-center items-center">
@@ -980,7 +1017,11 @@ function App() {
                                   ) : (
                                     <>
                                       <div className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
-                                        <img src={data.img} width="50" className="xs:w-16 sm:w-16"></img>
+                                        <img
+                                          src={data.img}
+                                          width="50"
+                                          className="xs:w-16 sm:w-16"
+                                        ></img>
                                       </div>
                                     </>
                                   )}
@@ -994,22 +1035,20 @@ function App() {
                       </div>
                       {playerTurn === listUser.indexOf(socket.id) ? (
                         <>
-                      
                           {/* {isDrawable == false ? ( */}
-                            <>
+                          <>
                             <div className="mt-10">
-
                               <Button
                                 color={"warning"}
                                 onClick={() => takeCard()}
                                 className="m-4"
-                                >
+                              >
                                 Take one card !
                               </Button>
-                                </div>
-                            </>
+                            </div>
+                          </>
                           {/* ) : ( */}
-                            <></>
+                          <></>
                           {/* )} */}
                         </>
                       ) : (
