@@ -11,7 +11,7 @@ import { defaultCard } from "./Deck";
 import { data } from "autoprefixer";
 import PlayerList from "./playerlist";
 
-/// TO BE CONTINUED AT BLACK CARD FEATURE
+
 
 const socket = io("https://uno-socketio.herokuapp.com");
 // const socket = io("http://localhost:3001");
