@@ -872,44 +872,19 @@ function App() {
           {showGame ? (
             <>
               <div className="flex justify-center items-center">
-                <div className="hidden xl:block w-full xl:w-1/2 h-full my-10 xs:my-0 xs:h-screen sm:my-0 sm:h-screen flex flex-col justify-center items-center border-2">
-                  <div className="container rounded-lg lg:w-6/12 md:w-8/12 shadow-md m-auto my-6 sm:10/12">
-                    <div className="container shadow-md w-full mb-3 bg-blue-500 px-6 py-4 rounded-t-lg flex flex-row flex-wrap items-center justify-between">
-                      <b className="text-white text-xl">Sembang kari App</b>
-                      <div className="flex flex-row">
-                        <input
-                          className="border-2 border-gray-300 rounded-lg text-gray-500 py-1 px-3 outline-blue-400"
-                          type="number"
-                          placeholder="room no"
-                          // onChange={(e) => {
-                          //   setRoom(e.target.value);
-                          // }}
-                        ></input>
-                        <button
-                          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 ml-2 rounded-lg"
-                          // onClick={joinRoom}
-                        >
-                          Join
-                        </button>
-                        <div className="w-auto py-2 px-4 mx-2 bg-indigo-800 rounded-xl text-white">
-                          {/* <b>{temRoom}</b> */}
+                <div className="hidden xl:block w-full xl:w-1/2 h-screen my-10 xs:my-0 xs:h-screen sm:my-0 sm:h-screen flex flex-col justify-center items-center border-2">
+                  <div className="container rounded-sm lg:w-6/12 md:w-8/12 shadow-md m-auto my-6 sm:10/12">
+                    <div className="container shadow-md w-full mb-3 bg-red-500 px-6 py-4 rounded-t-lg flex flex-row flex-wrap items-center justify-between">
+                      <b className="text-white text-xl">Uno</b>
+                      <div className="flex flex-row justify-center items-center">
+                          
+                        <h3 className="text-black font-semibold">Room No : </h3>
+                        <div className="w-auto py-2 px-4 mx-2 bg-red-800 rounded-xl text-white font-bold">
+                          {/* <b>{temRoom}</b> */} 1
                         </div>
                       </div>
                     </div>
-                    {/* <div className="container flex flex-row gap-x-1.5 justify-center items-center">
-        <div className="bg-blue-300 py-2 px-4 rounded-full text-blue-600">
-          Room 1
-        </div>
-        <div className="bg-blue-300 py-2 px-4 rounded-full text-blue-600">
-          Room 2
-        </div>
-        <div className="bg-blue-300 py-2 px-4 rounded-full text-blue-600">
-          Room 3
-        </div>
-        <div className="bg-blue-300 py-2 px-4 rounded-full text-blue-600">
-          Room 4
-        </div>
-      </div> */}
+                  
                     <div className="relative">
                       <div className="container shadow-md h-96 mt-2 py-3 px-3 overflow-y-scroll">
                         {/* {data.map((da) => (
@@ -917,18 +892,18 @@ function App() {
         ))} */}
                         <div className="container mt-2 py-3 "></div>
                       </div>
-                      <div class="absolute bottom-3 inset-x-1/4 p-2 bg-indigo-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex">
-                        <span class="flex rounded-full bg-indigo-500 uppercase px-2 py-1 text-xs font-bold mr-3">
+                      <div class="absolute bottom-3 rounded-3xl inset-x-1/4 px-3 py-2 bg-red-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex">
+                        <span class="flex rounded-full bg-red-500 uppercase px-2 py-1 text-xs font-bold mr-3">
                           New
                         </span>
                         <span class="font-semibold mr-2 text-left flex-auto">
-                          {/* <i>{newUser.user_id}</i> has joined the room */}
+                           has send the chat
                         </span>
                       </div>
                     </div>
                     <div className="container m-2">
                       <input
-                        className="border-2 border-gray-300 rounded-lg py-2 px-4 m-3 w-9/12 text-gray-500 outline-blue-100"
+                        className="border-2 border-gray-300 rounded-3xl py-2 px-4 m-3 w-9/12 text-gray-500 outline-red-100"
                         type="text"
                         placeholder="Message ..."
                         // value={text}
@@ -937,7 +912,7 @@ function App() {
                         // }}
                       ></input>
                       <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 w-2/12 rounded-lg"
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 w-2/12 rounded-3xl"
                         // onClick={sendMessage}
                       >
                         Send
