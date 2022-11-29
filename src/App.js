@@ -11,10 +11,8 @@ import { defaultCard } from "./Deck";
 import { data } from "autoprefixer";
 import PlayerList from "./playerlist";
 
-
-
-const socket = io("https://uno-socketio.herokuapp.com");
-// const socket = io("http://localhost:3001");
+// const socket = io("https://uno-socketio.herokuapp.com");
+const socket = io("http://localhost:3001");
 
 let g = localStorage.getItem("gameDeck");
 if (g) {
@@ -128,7 +126,6 @@ function App() {
         localStorage.setItem("usernameList", JSON.stringify(jarr));
         list = jarr;
       }
-
     });
   };
 
@@ -173,7 +170,7 @@ function App() {
     // setGameDeck(deckTemp);
 
     localStorage.setItem("turnDirection", "right");
-    var h = JSON.parse(localStorage.getItem("usernameList"))
+    var h = JSON.parse(localStorage.getItem("usernameList"));
 
     console.log("gameDeck lepas agih", deckTemp);
     console.log("senarai kad bagi setiap user", obj);
@@ -351,8 +348,7 @@ function App() {
   };
 
   const getWinner = () => {
-
-    var a = localStorage.getItem("name")
+    var a = localStorage.getItem("name");
     // if (playerDeck.length == 0) {
     socket.emit("winner", { room: room, winnerId: a });
     setShowGame(false);
@@ -463,7 +459,10 @@ function App() {
         if (tempId == key) {
           localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
           localStorage.setItem("listUser", JSON.stringify(data.listUser));
-          localStorage.setItem("usernameList", JSON.stringify(data.usernameList));
+          localStorage.setItem(
+            "usernameList",
+            JSON.stringify(data.usernameList)
+          );
           localStorage.setItem("turnDirection", "right");
 
           setListUser(data.listUser);
@@ -872,190 +871,274 @@ function App() {
         <>
           {showGame ? (
             <>
-              <div className="w-full h-full my-10 xs:my-0 xs:h-screen sm:my-0 sm:h-screen flex flex-col justify-center items-center">
-                <PlayerList turn={playerTurn} />
-                <div className="w-3/4 xs:w-full sm:w-full justify-center items-center">
-                  <Card>
-                    <div className="flex flex-col justify-center items-center">
-                      {isHost ? (
-                        <>
-                          {isStart ? (
-                            <>
-                              <div className="flex flex-row justify-center items-center mb-12 gap-x-4">
-                                <div className="p-2 m-2 shadow-md rounded-lg w-32 flex justify-center ">
-                                  <img src={currentCard.img} width="100"></img>
+              <div className="flex justify-center items-center">
+                <div className="hidden xl:block w-full xl:w-1/2 h-full my-10 xs:my-0 xs:h-screen sm:my-0 sm:h-screen flex flex-col justify-center items-center border-2">
+                  <div className="container rounded-lg lg:w-6/12 md:w-8/12 shadow-md m-auto my-6 sm:10/12">
+                    <div className="container shadow-md w-full mb-3 bg-blue-500 px-6 py-4 rounded-t-lg flex flex-row flex-wrap items-center justify-between">
+                      <b className="text-white text-xl">Sembang kari App</b>
+                      <div className="flex flex-row">
+                        <input
+                          className="border-2 border-gray-300 rounded-lg text-gray-500 py-1 px-3 outline-blue-400"
+                          type="number"
+                          placeholder="room no"
+                          // onChange={(e) => {
+                          //   setRoom(e.target.value);
+                          // }}
+                        ></input>
+                        <button
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 ml-2 rounded-lg"
+                          // onClick={joinRoom}
+                        >
+                          Join
+                        </button>
+                        <div className="w-auto py-2 px-4 mx-2 bg-indigo-800 rounded-xl text-white">
+                          {/* <b>{temRoom}</b> */}
+                        </div>
+                      </div>
+                    </div>
+                    {/* <div className="container flex flex-row gap-x-1.5 justify-center items-center">
+        <div className="bg-blue-300 py-2 px-4 rounded-full text-blue-600">
+          Room 1
+        </div>
+        <div className="bg-blue-300 py-2 px-4 rounded-full text-blue-600">
+          Room 2
+        </div>
+        <div className="bg-blue-300 py-2 px-4 rounded-full text-blue-600">
+          Room 3
+        </div>
+        <div className="bg-blue-300 py-2 px-4 rounded-full text-blue-600">
+          Room 4
+        </div>
+      </div> */}
+                    <div className="relative">
+                      <div className="container shadow-md h-96 mt-2 py-3 px-3 overflow-y-scroll">
+                        {/* {data.map((da) => (
+          <p>{da.message}</p>
+        ))} */}
+                        <div className="container mt-2 py-3 "></div>
+                      </div>
+                      <div class="absolute bottom-3 inset-x-1/4 p-2 bg-indigo-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex">
+                        <span class="flex rounded-full bg-indigo-500 uppercase px-2 py-1 text-xs font-bold mr-3">
+                          New
+                        </span>
+                        <span class="font-semibold mr-2 text-left flex-auto">
+                          {/* <i>{newUser.user_id}</i> has joined the room */}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="container m-2">
+                      <input
+                        className="border-2 border-gray-300 rounded-lg py-2 px-4 m-3 w-9/12 text-gray-500 outline-blue-100"
+                        type="text"
+                        placeholder="Message ..."
+                        // value={text}
+                        // onChange={(e) => {
+                        //   setText(e.target.value);
+                        // }}
+                      ></input>
+                      <button
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 w-2/12 rounded-lg"
+                        // onClick={sendMessage}
+                      >
+                        Send
+                      </button>
+                    </div>
+                    {/* {vModal()} */}
+                  </div>
+                </div>
+                <div className="w-full xl:w-1/2 h-full my-10 xs:my-0 xs:h-screen sm:my-0 sm:h-screen flex flex-col justify-center items-center">
+                  <PlayerList turn={playerTurn} />
+                  <div className="w-1/4 xs:w-full sm:w-full justify-center items-center">
+                    <Card>
+                      <div className="flex flex-col justify-center items-center">
+                        {isHost ? (
+                          <>
+                            {isStart ? (
+                              <>
+                                <div className="flex flex-row justify-center items-center mb-12 gap-x-4">
+                                  <div className="p-2 m-2 shadow-md rounded-lg w-32 flex justify-center ">
+                                    <img
+                                      src={currentCard.img}
+                                      width="100"
+                                    ></img>
+                                  </div>
+                                  {cardChangeColor.color != null ? (
+                                    <>
+                                      <div className="w-20 ">
+                                        {/* card kecil */}
+                                        <img
+                                          src={
+                                            defaultCard[cardChangeColor.color]
+                                              .img
+                                          }
+                                          width="50"
+                                        ></img>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}
                                 </div>
-                                {cardChangeColor.color != null ? (
-                                  <>
-                                    <div className="w-20 ">
-                                      {/* card kecil */}
-                                      <img
-                                        src={
-                                          defaultCard[cardChangeColor.color].img
-                                        }
-                                        width="50"
-                                      ></img>
-                                    </div>
-                                  </>
-                                ) : (
-                                  ""
-                                )}
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                className="bg-red-500 py-3 px-5 font-bold xs:text-sm rounded-md text-white hover:opacity-90"
-                                onClick={() => startDraw()}
-                              >
-                                Start game!
-                              </button>
-                            </>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          {isStart ? (
-                            <>
-                              <div className="flex flex-row justify-center items-center mb-12 gap-x-4">
-                                <div className="p-2 m-2 shadow-md rounded-lg w-32 xs:w-24 sm:w-24 flex justify-center ">
-                                  <img src={currentCard.img} width="100"></img>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  className="bg-red-500 py-3 px-5 font-bold xs:text-sm rounded-md text-white hover:opacity-90"
+                                  onClick={() => startDraw()}
+                                >
+                                  Start game!
+                                </button>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {isStart ? (
+                              <>
+                                <div className="flex flex-row justify-center items-center mb-12 gap-x-4">
+                                  <div className="p-2 m-2 shadow-md rounded-lg w-32 xs:w-24 sm:w-24 flex justify-center ">
+                                    <img
+                                      src={currentCard.img}
+                                      width="100"
+                                    ></img>
+                                  </div>
+                                  {cardChangeColor.color != null ? (
+                                    <>
+                                      <div className="w-20 ">
+                                        {/* card kecil */}
+                                        <img
+                                          src={
+                                            defaultCard[cardChangeColor.color]
+                                              .img
+                                          }
+                                          width="50"
+                                        ></img>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}
                                 </div>
-                                {cardChangeColor.color != null ? (
+                              </>
+                            ) : (
+                              ""
+                            )}
+                          </>
+                        )}
+                        {playerTurn === listUser.indexOf(socket.id) ? (
+                          <>
+                            <h3 className="font-semibold mb-3 text-green-400 xs:text-sm sm:text-sm">
+                              Its your turn, please draw a card
+                            </h3>
+                          </>
+                        ) : (
+                          <>
+                            <h3 className="font-semibold mb-3 text-red-600 xs:text-sm sm:text-sm">
+                              Its not your turn, please wait
+                            </h3>
+                          </>
+                        )}
+                        <div className="flex flex-row flex-wrap justify-center">
+                          <br></br>
+
+                          {playerDeck ? (
+                            <>
+                              {playerDeck.map((data, idx) => {
+                                return (
                                   <>
-                                    <div className="w-20 ">
-                                      {/* card kecil */}
-                                      <img
-                                        src={
-                                          defaultCard[cardChangeColor.color].img
-                                        }
-                                        width="50"
-                                      ></img>
-                                    </div>
+                                    {playerTurn ===
+                                    listUser.indexOf(socket.id) ? (
+                                      <>
+                                        {currentCard.color == data.color ||
+                                        currentCard.code == data.code ||
+                                        data.code == "C" ||
+                                        data.color == "X" ? (
+                                          <>
+                                            {data.code == "C" ? (
+                                              <>
+                                                <div
+                                                  onClick={() =>
+                                                    drawCardChangeColor(idx)
+                                                  }
+                                                  className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
+                                                >
+                                                  <img
+                                                    src={data.img}
+                                                    width="50"
+                                                    className="xs:w-16 sm:w-16"
+                                                  ></img>
+                                                </div>
+                                              </>
+                                            ) : (
+                                              <>
+                                                <div
+                                                  onClick={() => drawCard(idx)}
+                                                  className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
+                                                >
+                                                  <img
+                                                    src={data.img}
+                                                    width="50"
+                                                    className="xs:w-16 sm:w-16"
+                                                  ></img>
+                                                </div>
+                                              </>
+                                            )}
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
+                                              <img
+                                                src={data.img}
+                                                width="50"
+                                                className="xs:w-16 sm:w-16"
+                                              ></img>
+                                            </div>
+                                          </>
+                                        )}
+                                      </>
+                                    ) : (
+                                      <>
+                                        <div className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
+                                          <img
+                                            src={data.img}
+                                            width="50"
+                                            className="xs:w-16 sm:w-16"
+                                          ></img>
+                                        </div>
+                                      </>
+                                    )}
                                   </>
-                                ) : (
-                                  ""
-                                )}
-                              </div>
+                                );
+                              })}
                             </>
                           ) : (
                             ""
                           )}
-                        </>
-                      )}
-                      {playerTurn === listUser.indexOf(socket.id) ? (
-                        <>
-                          <h3 className="font-semibold mb-3 text-green-400 xs:text-sm sm:text-sm">
-                            Its your turn, please draw a card
-                          </h3>
-                        </>
-                      ) : (
-                        <>
-                          <h3 className="font-semibold mb-3 text-red-600 xs:text-sm sm:text-sm">
-                            Its not your turn, please wait
-                          </h3>
-                        </>
-                      )}
-                      <div className="flex flex-row flex-wrap justify-center">
-                        <br></br>
-
-                        {playerDeck ? (
+                        </div>
+                        {playerTurn === listUser.indexOf(socket.id) ? (
                           <>
-                            {playerDeck.map((data, idx) => {
-                              return (
-                                <>
-                                  {playerTurn ===
-                                  listUser.indexOf(socket.id) ? (
-                                    <>
-                                      {currentCard.color == data.color ||
-                                      currentCard.code == data.code ||
-                                      data.code == "C" ||
-                                      data.color == "X" ? (
-                                        <>
-                                          {data.code == "C" ? (
-                                            <>
-                                              <div
-                                                onClick={() =>
-                                                  drawCardChangeColor(idx)
-                                                }
-                                                className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
-                                              >
-                                                <img
-                                                  src={data.img}
-                                                  width="50"
-                                                  className="xs:w-16 sm:w-16"
-                                                ></img>
-                                              </div>
-                                            </>
-                                          ) : (
-                                            <>
-                                              <div
-                                                onClick={() => drawCard(idx)}
-                                                className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg hover:shadow-red-400 hover:cursor-pointer hover:-mt-2 duration-100"
-                                              >
-                                                <img
-                                                  src={data.img}
-                                                  width="50"
-                                                  className="xs:w-16 sm:w-16"
-                                                ></img>
-                                              </div>
-                                            </>
-                                          )}
-                                        </>
-                                      ) : (
-                                        <>
-                                          <div className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
-                                            <img
-                                              src={data.img}
-                                              width="50"
-                                              className="xs:w-16 sm:w-16"
-                                            ></img>
-                                          </div>
-                                        </>
-                                      )}
-                                    </>
-                                  ) : (
-                                    <>
-                                      <div className="xs:w-14 sm:w-14 p-2 m-2 shadow-md rounded-lg cursor-not-allowed">
-                                        <img
-                                          src={data.img}
-                                          width="50"
-                                          className="xs:w-16 sm:w-16"
-                                        ></img>
-                                      </div>
-                                    </>
-                                  )}
-                                </>
-                              );
-                            })}
+                            {/* {isDrawable == false ? ( */}
+                            <>
+                              <div className="mt-10">
+                                <Button
+                                  color={"warning"}
+                                  onClick={() => takeCard()}
+                                  className="m-4"
+                                >
+                                  Take one card !
+                                </Button>
+                              </div>
+                            </>
+                            {/* ) : ( */}
+                            <></>
+                            {/* )} */}
                           </>
                         ) : (
                           ""
                         )}
                       </div>
-                      {playerTurn === listUser.indexOf(socket.id) ? (
-                        <>
-                          {/* {isDrawable == false ? ( */}
-                          <>
-                            <div className="mt-10">
-                              <Button
-                                color={"warning"}
-                                onClick={() => takeCard()}
-                                className="m-4"
-                              >
-                                Take one card !
-                              </Button>
-                            </div>
-                          </>
-                          {/* ) : ( */}
-                          <></>
-                          {/* )} */}
-                        </>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  </Card>
+                    </Card>
+                  </div>
                 </div>
               </div>
             </>
