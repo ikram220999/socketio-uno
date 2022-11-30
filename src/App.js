@@ -61,6 +61,7 @@ function App() {
   });
   const [name, setName] = useState("");
   const [usernameList, setUsernameList] = useState([]);
+  const [chat, setChat] = useState([]);
 
   console.log("cardChangeColor", cardChangeColor);
 
