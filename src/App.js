@@ -61,7 +61,10 @@ function App() {
   });
   const [name, setName] = useState("");
   const [usernameList, setUsernameList] = useState([]);
-  const [chat, setChat] = useState([]);
+  const [chatData, setChatData] = useState([]);
+  const [inputChat, setInputChat] = useState("");
+
+  console.log("chat data", chatData);
   //test
 
   console.log("cardChangeColor", cardChangeColor);
@@ -195,6 +198,21 @@ function App() {
         setShowGame(true);
       }
     }
+  };
+
+  const sendMessage = () => {
+    var obj = {
+      user: localStorage.getItem("name"),
+      chat: inputChat,
+    };
+
+    setInputChat("");
+    setChatData([...chatData, { user: obj.user, chat: obj.chat }]);
+    socket.emit("send_chat", {
+      user: localStorage.getItem("name"),
+      chat: inputChat,
+      room: room,
+    });
   };
 
   const startDraw = () => {
@@ -478,6 +496,20 @@ function App() {
           setShowGame(true);
         }
       }
+    });
+
+    socket.on("send_chat_ws", (data) => {
+      var obj = {
+        user: data.user,
+        chat: data.chat,
+      };
+      setChatData((prev) => [
+        ...prev,
+        {
+          user: data.user,
+          chat: data.chat,
+        },
+      ]);
     });
 
     socket.on("my_message", (data) => {
@@ -879,19 +911,22 @@ function App() {
                     <div className="container shadow-md w-full mb-3 bg-red-500 px-6 py-4 rounded-t-lg flex flex-row flex-wrap items-center justify-between">
                       <b className="text-white text-xl">Uno</b>
                       <div className="flex flex-row justify-center items-center">
-                          
                         <h3 className="text-black font-semibold">Room No : </h3>
                         <div className="w-auto py-2 px-4 mx-2 bg-red-800 rounded-xl text-white font-bold">
                           {/* <b>{temRoom}</b> */} {room}
                         </div>
                       </div>
                     </div>
-                  
+
                     <div className="relative h-3/4">
                       <div className="container shadow-sm h-full px-3 overflow-y-scroll">
-                        {/* {data.map((da) => (
-          <p>{da.message}</p>
-        ))} */}
+                        {chatData.map((da) => (
+                          <>
+                            <span>{da.user} :: </span>
+                            <span>{da.chat}</span>
+                            <br />
+                          </>
+                        ))}
                         <div className="container mt-2 py-3 "></div>
                       </div>
                       {/* <div class="absolute bottom-3 rounded-3xl inset-x-1/4 px-3 py-2 bg-red-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex">
@@ -908,14 +943,14 @@ function App() {
                         className="border-2 border-gray-300 rounded-3xl py-2 px-4 m-3 w-9/12 text-gray-500 outline-red-100"
                         type="text"
                         placeholder="Message ..."
-                        // value={text}
-                        // onChange={(e) => {
-                        //   setText(e.target.value);
-                        // }}
+                        value={inputChat}
+                        onChange={(e) => {
+                          setInputChat(e.target.value);
+                        }}
                       ></input>
                       <button
                         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 w-2/12 rounded-3xl"
-                        // onClick={sendMessage}
+                        onClick={sendMessage}
                       >
                         Send
                       </button>
