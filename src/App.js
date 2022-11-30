@@ -872,36 +872,36 @@ function App() {
           {showGame ? (
             <>
               <div className="flex justify-center items-center">
-                <div className="hidden xl:block w-full xl:w-1/2 h-screen my-10 xs:my-0 xs:h-screen sm:my-0 sm:h-screen flex flex-col justify-center items-center border-2">
-                  <div className="container rounded-sm lg:w-6/12 md:w-8/12 shadow-md m-auto my-6 sm:10/12">
+                <div className=" relative hidden xl:block w-full xl:w-1/2 h-screen my-10 xs:my-0 xs:h-screen sm:my-0 h-screen flex flex-col justify-center items-center border-2">
+                  <div className=" rounded-sm lg:w-6/12 md:w-8/12 shadow-md m-auto h-screen sm:10/12">
                     <div className="container shadow-md w-full mb-3 bg-red-500 px-6 py-4 rounded-t-lg flex flex-row flex-wrap items-center justify-between">
                       <b className="text-white text-xl">Uno</b>
                       <div className="flex flex-row justify-center items-center">
                           
                         <h3 className="text-black font-semibold">Room No : </h3>
                         <div className="w-auto py-2 px-4 mx-2 bg-red-800 rounded-xl text-white font-bold">
-                          {/* <b>{temRoom}</b> */} 1
+                          {/* <b>{temRoom}</b> */} {room}
                         </div>
                       </div>
                     </div>
                   
-                    <div className="relative">
-                      <div className="container shadow-md h-96 mt-2 py-3 px-3 overflow-y-scroll">
+                    <div className="relative h-3/4">
+                      <div className="container shadow-sm h-full px-3 overflow-y-scroll">
                         {/* {data.map((da) => (
           <p>{da.message}</p>
         ))} */}
                         <div className="container mt-2 py-3 "></div>
                       </div>
-                      <div class="absolute bottom-3 rounded-3xl inset-x-1/4 px-3 py-2 bg-red-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex">
+                      {/* <div class="absolute bottom-3 rounded-3xl inset-x-1/4 px-3 py-2 bg-red-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex">
                         <span class="flex rounded-full bg-red-500 uppercase px-2 py-1 text-xs font-bold mr-3">
                           New
                         </span>
                         <span class="font-semibold mr-2 text-left flex-auto">
                            has send the chat
                         </span>
-                      </div>
+                      </div> */}
                     </div>
-                    <div className="container m-2">
+                    <div className="container m-2 bottom-0 absolute">
                       <input
                         className="border-2 border-gray-300 rounded-3xl py-2 px-4 m-3 w-9/12 text-gray-500 outline-red-100"
                         type="text"
