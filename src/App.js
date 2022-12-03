@@ -11,8 +11,8 @@ import { defaultCard } from "./Deck";
 import { data } from "autoprefixer";
 import PlayerList from "./playerlist";
 
-// const socket = io("https://uno-socketio.herokuapp.com");
-const socket = io("http://localhost:3001");
+const socket = io("https://uno-socketio.herokuapp.com");
+// const socket = io("http://localhost:3001");
 
 let g = localStorage.getItem("gameDeck");
 if (g) {
