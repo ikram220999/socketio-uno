@@ -921,7 +921,9 @@ function App() {
 
                     <div className="relative h-3/4">
                       <div className="container shadow-sm h-full px-3 overflow-y-scroll">
-                        {chatData.map((da) => (
+                        {chatData.map((da) => {
+                          let username = localStorage.getItem("name");
+                          return(
                           <>
                             {da.user == username ? (
                               <div className="w-full flex flex-row mt-2 items-center">
@@ -935,17 +937,17 @@ function App() {
                             ) : (
                               <>
                                 <div className="w-full flex flex-row mt-2 items-center">
-                                  <div className="py-1 px-6 bg-gray-300 rounded-3xl text-white mr-3">
+                                  <div className="py-1 px-6 bg-gray-500 rounded-3xl text-white mr-3">
                                     {da.user}
                                   </div>
-                                  <div className="py-1 px-6 bg-gray-200 rounded-3xl text-white ">
+                                  <div className="py-1 px-6 bg-gray-400 rounded-3xl text-white ">
                                     {da.chat}
                                   </div>
                                 </div>
                               </>
                             )}
                           </>
-                        ))}
+                        )})}
                         <div className="container mt-2 py-3 "></div>
                       </div>
                       {/* <div class="absolute bottom-3 rounded-3xl inset-x-1/4 px-3 py-2 bg-red-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex">
