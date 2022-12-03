@@ -82,6 +82,8 @@ function App() {
   const [isPlayer, setIsPlayer] = useState(false);
   const [showGame, setShowGame] = useState(false);
 
+  var username = localStorage.getItem("user");
+
   console.log("isHost", isHost);
 
   console.log("cur_card", currentCard);
@@ -205,14 +207,13 @@ function App() {
       user: localStorage.getItem("name"),
       chat: inputChat,
     };
-
-    setInputChat("");
-    setChatData([...chatData, { user: obj.user, chat: obj.chat }]);
     socket.emit("send_chat", {
       user: localStorage.getItem("name"),
       chat: inputChat,
       room: room,
     });
+    setInputChat("");
+    setChatData([...chatData, { user: obj.user, chat: obj.chat }]);
   };
 
   const startDraw = () => {
@@ -922,9 +923,27 @@ function App() {
                       <div className="container shadow-sm h-full px-3 overflow-y-scroll">
                         {chatData.map((da) => (
                           <>
-                            <span>{da.user} :: </span>
-                            <span>{da.chat}</span>
-                            <br />
+                            {da.user == username ? (
+                              <div className="w-full flex flex-row mt-2 items-center">
+                                <div className="py-1 px-6 bg-red-500 rounded-3xl text-white mr-3">
+                                  {da.user}
+                                </div>
+                                <div className="py-1 px-6 bg-red-400 rounded-3xl text-white ">
+                                  {da.chat}
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="w-full flex flex-row mt-2 items-center">
+                                  <div className="py-1 px-6 bg-gray-300 rounded-3xl text-white mr-3">
+                                    {da.user}
+                                  </div>
+                                  <div className="py-1 px-6 bg-gray-200 rounded-3xl text-white ">
+                                    {da.chat}
+                                  </div>
+                                </div>
+                              </>
+                            )}
                           </>
                         ))}
                         <div className="container mt-2 py-3 "></div>
