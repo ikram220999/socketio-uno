@@ -16,7 +16,7 @@ const ModalRule = ({ closeRule }) => {
             How to play
           </h2>
 
-          <h3></h3>
+          <hr class="my-4 h-px bg-gray-200 border-0 dark:bg-gray-700" />
           <div className="mt-4 flex flex-col gap-4">
             <p>
               There are 4 different colour of card in a deck consist blue, red,
@@ -36,6 +36,27 @@ const ModalRule = ({ closeRule }) => {
             <p> Player only can draw a card for each turn.</p>
 
             <p>Game start after player 1 draw a card</p>
+            <hr class="my-4 h-px bg-gray-200 border-0 dark:bg-gray-700" />
+
+            <h2 className="font-semibold text-xl text-center mt-4">
+            Start game
+          </h2>
+
+          
+          <div className="mt-4 flex flex-col gap-4">
+            <p>
+              Enter the player name and room number then press enter
+            </p>
+            <p>Share the room number with other member </p>
+            <p>The game host will see a list of player id that already entered the room</p>
+            <p>Wait till all player already in the list</p>
+            <p>Start the game</p>
+            <p>All palyer will be given 7 card each</p>
+            <p>Host can start the game</p>
+            <p>have fun !</p>
+           
+
+
           </div>
 
           <button
@@ -46,8 +67,9 @@ const ModalRule = ({ closeRule }) => {
           </button>
         </div>
       </div>
+      </div>
     </>
-  );
+  )
 };
 
 export default ModalRule;
