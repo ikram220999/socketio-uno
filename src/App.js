@@ -26,9 +26,9 @@ localStorage.setItem("usernameList", null);
 function App() {
   let id = "";
 
-  console.log("deck", deck);
+  // console.log("deck", deck);
   socket.on("connect", () => {
-    console.log("id saya", socket.id);
+    // console.log("id saya", socket.id);
     localStorage.setItem("id", socket.id);
   });
 
@@ -41,7 +41,7 @@ function App() {
   const setGameDeckValue = useCallback((newValue) => {
     setGameDeck(newValue);
   }, []);
-  console.log("gameDeck lepas loop", gameDeck);
+  // console.log("gameDeck lepas loop", gameDeck);
   const [user, setUser] = useState("");
   const [listUser, setListUser] = useState([]);
   const [room, setRoom] = useState(localStorage.getItem("room"));
@@ -64,20 +64,20 @@ function App() {
   const [chatData, setChatData] = useState([]);
   const [inputChat, setInputChat] = useState("");
 
-  console.log("chat data", chatData);
+  // console.log("chat data", chatData);
   //test
 
-  console.log("cardChangeColor", cardChangeColor);
+  // console.log("cardChangeColor", cardChangeColor);
 
-  console.log("isDrawable", isDrawable);
+  // console.log("isDrawable", isDrawable);
 
-  console.log("playerTurn", playerTurn);
+  // console.log("playerTurn", playerTurn);
 
   const [playerDeck, setPlayerDeck] = useState(
     JSON.parse(localStorage.getItem("playerDeck"))
   );
 
-  console.log("playerDeck", playerDeck);
+  // console.log("playerDeck", playerDeck);
   const [startGame, setStartGame] = useState(false);
   const [isPlayer, setIsPlayer] = useState(false);
   const [showGame, setShowGame] = useState(false);
@@ -85,16 +85,16 @@ function App() {
 
   var username = localStorage.getItem("user");
 
-  console.log("isHost", isHost);
+  // console.log("isHost", isHost);
 
-  console.log("cur_card", currentCard);
+  // console.log("cur_card", currentCard);
 
   const joinRoom = (room, name) => {
     localStorage.setItem("room", room);
     localStorage.setItem("name", name);
     var list = null;
     var j = JSON.parse(localStorage.getItem("usernameList"));
-    console.log("kambing");
+    // console.log("kambing");
     if (j != null) {
       j.push(name);
       localStorage.setItem("usernameList", JSON.stringify(j));
@@ -114,16 +114,16 @@ function App() {
     socket.emit("join_room", { room: room, name: name });
   };
 
-  console.log("id saya", id);
+  // console.log("id saya", id);
 
   const newUser = () => {
     socket.on("user_join", (data) => {
-      console.log("new user", data.id);
+      // console.log("new user", data.id);
       setUser(data.id);
 
       var list = null;
       var j = JSON.parse(localStorage.getItem("usernameList"));
-      console.log("kambing");
+      // console.log("kambing");
       if (j != null) {
         j.push(data.name);
         localStorage.setItem("usernameList", JSON.stringify(j));
@@ -139,7 +139,7 @@ function App() {
 
   const getlistUser = () => {
     socket.on("list_user", (data) => {
-      console.log("list user", data);
+      // console.log("list user", data);
       setListUser(data.c);
 
       // setUsernameList(list);
@@ -148,10 +148,10 @@ function App() {
 
   const getIsHost = () => {
     if (listUser.length > 1) {
-      console.log("cukuppppppp");
+      // console.log("cukuppppppp");
       if (listUser[0] == localStorage.getItem("id")) {
         setIsHost(true);
-        console.log("pemain cukup");
+        // console.log("pemain cukup");
       }
     }
   };
@@ -159,7 +159,7 @@ function App() {
   const gameStart = () => {
     let tempId = localStorage.getItem("id");
     localStorage.setItem("listUser", JSON.stringify(listUser));
-    console.log("host start the game");
+    // console.log("host start the game");
     let obj = {};
     let deckTemp = gameDeck;
 
@@ -180,8 +180,8 @@ function App() {
     localStorage.setItem("turnDirection", "right");
     var h = JSON.parse(localStorage.getItem("usernameList"));
 
-    console.log("gameDeck lepas agih", deckTemp);
-    console.log("senarai kad bagi setiap user", obj);
+    // console.log("gameDeck lepas agih", deckTemp);
+    // console.log("senarai kad bagi setiap user", obj);
 
     socket.emit("start_game", {
       room: room,
@@ -193,7 +193,7 @@ function App() {
     });
 
     for (let key in obj) {
-      console.log("key", key);
+      // console.log("key", key);
       if (tempId == key) {
         localStorage.setItem("playerDeck", JSON.stringify(obj[key]));
         setPlayerDeck(obj[key]);
@@ -325,8 +325,8 @@ function App() {
     }
 
     if (passCard.code == "p2") {
-      console.log("plus 2 card");
-      console.log("room ataas", room);
+      // console.log("plus 2 card");
+      // console.log("room ataas", room);
       socket.emit("plus_two", {
         room: room,
         cardDrawed: passCard,
@@ -481,7 +481,7 @@ function App() {
 
   useEffect(() => {
     socket.on("test", (data) => {
-      console.log("testdata", data);
+      // console.log("testdata", data);
     });
 
     newUser();
@@ -489,12 +489,12 @@ function App() {
 
     socket.on("start", (data) => {
       let tempId = localStorage.getItem("id");
-      console.log("tempId", tempId);
-      console.log("started game", data);
+      // console.log("tempId", tempId);
+      // console.log("started game", data);
       // console.log("id parse json", tempId);
-      console.log("data obj dari server", data);
+      // console.log("data obj dari server", data);
       for (let key in data.cardPlayer) {
-        console.log("key", key);
+        // console.log("key", key);
         if (tempId == key) {
           localStorage.setItem("gameDeck", JSON.stringify(data.gameDeck));
           localStorage.setItem("listUser", JSON.stringify(data.listUser));
@@ -532,7 +532,7 @@ function App() {
     });
 
     socket.on("my_message", (data) => {
-      console.log("my message", data);
+      // console.log("my message", data);
     });
 
     socket.on("cur_card", (data) => {
@@ -552,11 +552,11 @@ function App() {
       if (data.skip) {
         var listuser = JSON.parse(localStorage.getItem("listUser"));
         var room = localStorage.getItem("room");
-        console.log("data turn", data.turn);
+        // console.log("data turn", data.turn);
         if (data.turn == listuser.indexOf(socket.id)) {
           let t = getPlayerTurn(data.turn);
 
-          console.log("turn sapa", t);
+          // console.log("turn sapa", t);
 
           setIsSkipped(true);
           setTimeout(() => {
@@ -632,39 +632,39 @@ function App() {
       setIsDrawable(p);
 
       let list_user = JSON.parse(localStorage.getItem("listUser"));
-      console.log("cardDrawed plusto", data.cardDrawed);
+      // console.log("cardDrawed plusto", data.cardDrawed);
       setCurrentCard(data.cardDrawed);
       setPlayerTurn(data.turn);
       if (data.turn == list_user.indexOf(socket.id)) {
-        console.log("plus_two_ws", data);
+        // console.log("plus_two_ws", data);
         setIsPlusTwo(true);
         setTimeout(() => {
           setIsPlusTwo(false);
         }, 3000);
 
-        console.log("check 1 player deck", playerDeck);
+        // console.log("check 1 player deck", playerDeck);
 
         let newPlayerDeck = JSON.parse(localStorage.getItem("playerDeck"));
         let newGameDeck = JSON.parse(localStorage.getItem("gameDeck"));
         let idxCard = [];
 
-        console.log("newGameDeck", newGameDeck);
+        // console.log("newGameDeck", newGameDeck);
         for (let p = 0; p < 2; p++) {
           let randomIndex = Math.floor(Math.random() * newGameDeck.length);
-          // console.log("randomIndex", randomIndex);
+          // // console.log("randomIndex", randomIndex);
           idxCard.push(newGameDeck[randomIndex]);
 
-          console.log("idxCard", idxCard);
+          // console.log("idxCard", idxCard);
 
-          console.log("check newPlayerDeck", newPlayerDeck);
+          // console.log("check newPlayerDeck", newPlayerDeck);
 
           newGameDeck = newGameDeck.filter((data, idx) => idx != randomIndex);
         }
         let latPlayerDeck = newPlayerDeck.concat(idxCard);
 
-        console.log("concat", latPlayerDeck);
+        // console.log("concat", latPlayerDeck);
 
-        console.log("room berapa", room);
+        // console.log("room berapa", room);
         socket.emit("minus_two_after_player_add", {
           room: room,
           gameDeck: newGameDeck,
@@ -679,7 +679,7 @@ function App() {
 
     socket.on("minus_two_after_player_add_ws", (data) => {
       let newGameDeck = data;
-      console.log("new game Deck", data);
+      // console.log("new game Deck", data);
 
       localStorage.setItem("gameDeck", JSON.stringify(newGameDeck));
       setGameDeck(newGameDeck);
@@ -745,7 +745,7 @@ function App() {
       tempObj["code"] = data.cardDrawed.code;
       tempObj["img"] = data.cardDrawed.img;
 
-      console.log("apa data cardDrawed", data.cardDrawed);
+      // console.log("apa data cardDrawed", data.cardDrawed);
 
       setGameDeck(data.gameDeck);
       setCurrentCard(tempObj);
