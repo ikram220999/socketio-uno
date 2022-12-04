@@ -1,6 +1,6 @@
 import "./App.css";
 import { io } from "socket.io-client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
 import Login from "./ModalLogin";
 import Room from "./page/Room";
@@ -81,6 +81,7 @@ function App() {
   const [startGame, setStartGame] = useState(false);
   const [isPlayer, setIsPlayer] = useState(false);
   const [showGame, setShowGame] = useState(false);
+  const inputRef = useRef(null)
 
   var username = localStorage.getItem("user");
 
@@ -213,8 +214,25 @@ function App() {
       room: room,
     });
     setInputChat("");
-    setChatData([...chatData, { user: obj.user, chat: obj.chat }]);
+    setChatData((prev) => [...prev, { user: obj.user, chat: obj.chat }]);
   };
+
+  const enter = (e) => {
+    if(e.key === 'Enter'){
+      var obj = {
+        user: localStorage.getItem("name"),
+        chat: inputChat,
+      };
+      socket.emit("send_chat", {
+        user: localStorage.getItem("name"),
+        chat: inputChat,
+        room: room,
+      });
+      setInputChat("");
+      setChatData((prev) => [...prev, { user: obj.user, chat: obj.chat }]);
+      inputRef.current.focus()
+    }
+  }
 
   const startDraw = () => {
     let randCard = gameDeck[Math.floor(Math.random() * gameDeck.length)];
@@ -965,9 +983,11 @@ function App() {
                         type="text"
                         placeholder="Message ..."
                         value={inputChat}
+                        ref={inputRef}
                         onChange={(e) => {
                           setInputChat(e.target.value);
                         }}
+                        onKeyDown={enter}
                       ></input>
                       <button
                         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 w-2/12 rounded-3xl"
