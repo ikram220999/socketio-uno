@@ -75,7 +75,7 @@ function ModalLogin({ joinRoom }) {
                   >
                     Reset
                   </button>
-
+                  <hr className="my-2 h-px bg-gray-200 border-0 dark:bg-gray-700" />
                   <button
                     className="border-2-rounded bg-blue-400 py-2 px-4 rounded-md text-white font-bold mt-4 w-60 hover:opacity-90"
                     onClick={() => openRule()}

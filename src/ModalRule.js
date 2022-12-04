@@ -36,14 +36,14 @@ const ModalRule = ({ closeRule }) => {
             <p> Player only can draw a card for each turn.</p>
 
             <p>Game start after player 1 draw a card</p>
-            <hr class="my-4 h-px bg-gray-200 border-0 dark:bg-gray-700" />
+            <hr className="my-4 h-px bg-gray-200 border-0 dark:bg-gray-700" />
 
-            <h2 className="font-semibold text-xl text-center mt-4">
+            <h2 className="font-semibold text-xl text-center ">
             Start game
           </h2>
 
           
-          <div className="mt-4 flex flex-col gap-4">
+          <div className="mt-2 flex flex-col gap-4">
             <p>
               Enter the player name and room number then press enter
             </p>
