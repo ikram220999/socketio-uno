@@ -54,7 +54,10 @@ const ModalRule = ({ closeRule }) => {
               <p>have fun !</p>
             </div>
 
-            <div className="bg-red-100 border-2 border-gray-300 ">
+            <hr class="my-4 h-px bg-gray-200 border-0 dark:bg-gray-700" />
+
+
+            <div className="bg-red-100 border-2 border-red-200 p-2 rounded-lg">
               <b>Important !</b>
               <p>
                 After complete a game. Please refresh and click reset to avoid
