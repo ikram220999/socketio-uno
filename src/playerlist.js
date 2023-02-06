@@ -30,32 +30,35 @@ const PlayerList = (props) => {
                   <th className="border text-sm">Role</th>
                 </tr>
                 <tr>
-                <td className="w-1/5 "><img src="./images/b0.png" width={40} className="m-auto"/></td>
-                  <td className="border text-xs"><p className="font-semibold">Number type card</p> <p>This card can be use to match previous drawed card either the card color or number</p></td>
+                <td className="w-1/5 p-1"><img src="./images/b0.png" width={40} className="m-auto"/></td>
+                  <td className="border text-xs p-1"><p className="font-semibold">Number type card</p> <p>This card can be use to match previous drawed card either the card color or number</p></td>
                 </tr>
                 <tr>
-                <td className="w-1/5 "><img src="./images/gp2-0.png" width={40} className="m-auto"/></td>
-                  <td className="border text-xs"><p className="font-semibold">Plus two card</p>
+                <td className="w-1/5 p-1"><img src="./images/gp2-0.png" width={40} className="m-auto"/></td>
+                  <td className="border text-xs p-1"><p className="font-semibold">Plus two card</p>
                     <p>When this card drawed, The next player will be added 2 card into their deck.</p>
                   </td>
                 </tr>
                 <tr>
-                <td className="w-1/5 "><img src="./images/rS-0.png" width={40} className="m-auto"/></td>
-                  <td className="border text-xs"><p className="font-semibold">Skip card</p> 
+                <td className="w-1/5 p-1"><img src="./images/rS-0.png" width={40} className="m-auto"/></td>
+                  <td className="border text-xs p-1"><p className="font-semibold">Skip card</p> 
                   <p>When this card drawed, The turn of next player will be skipped</p></td>
                 </tr>
                 <tr>
-                <td className="w-1/5 "><img src="./images/yR.png" width={40} className="m-auto"/></td>
-                  <td className="border text-xs"><p className="font-semibold">Reverse card</p>
+                <td className="w-1/5 p-1"><img src="./images/yR.png" width={40} className="m-auto"/></td>
+                  <td className="border text-xs p-1"><p className="font-semibold">Reverse card</p>
                   <p>When this card drawed, The turn pattern will be reversed.</p></td>
                 </tr>
                 <tr>
-                <td className="w-1/5 "><img src="./images/wc.png" width={40} className="m-auto"/></td>
-                  <td className="border text-xs"><p className="font-semibold">Wild card</p>
+                <td className="w-1/5 p-1"><img src="./images/wc.png" width={40} className="m-auto"/></td>
+                  <td className="border text-xs p-1"><p className="font-semibold">Wild card</p>
                   <p>Player that drawed this card can choose to continue the game by choosing next card color</p></td>
                 </tr>
               </table>
             </div>
+          </div>
+          <div className="m-auto w-fit mt-6">
+            <p className="text-sm text-gray-400">More guide coming soon ...</p>
           </div>
           <div className="m-auto w-fit mt-6">
             <button className="bg-red-500 text-white text-sm px-3 py-2 font-semibold rounded-lg" onClick={closeModal}>close</button>
