@@ -11,6 +11,10 @@ const PlayerList = (props) => {
   const showModal = () => {
     setShow(true)
   }
+
+  const closeModal = () => {
+    setShow(false)
+  }
   return (
     <>
     <Modal show={show}>
@@ -42,14 +46,19 @@ const PlayerList = (props) => {
                 </tr>
                 <tr>
                 <td className="w-1/5 "><img src="./images/yR.png" width={40} className="m-auto"/></td>
-                  <td className="border text-xs">Role</td>
+                  <td className="border text-xs"><p className="font-semibold">Reverse card</p>
+                  <p>When this card drawed, The turn pattern will be reversed.</p></td>
                 </tr>
                 <tr>
                 <td className="w-1/5 "><img src="./images/wc.png" width={40} className="m-auto"/></td>
-                  <td className="border text-xs">Role</td>
+                  <td className="border text-xs"><p className="font-semibold">Wild card</p>
+                  <p>Player that drawed this card can choose to continue the game by choosing next card color</p></td>
                 </tr>
               </table>
             </div>
+          </div>
+          <div className="m-auto w-fit mt-6">
+            <button className="bg-red-500 text-white text-sm px-3 py-2 font-semibold rounded-lg" onClick={closeModal}>close</button>
           </div>
       </Modal.Body>
     </Modal>
