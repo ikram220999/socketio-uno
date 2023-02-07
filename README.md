@@ -76,4 +76,4 @@ added ingame help section
 todo
 - vs bot
 - list user display name
-
+-button reset lepas abih game kena ubah "back to home"
