@@ -72,3 +72,8 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 
 added ingame help section
+
+todo
+- vs bot
+- list user display name
+
