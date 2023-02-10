@@ -77,3 +77,4 @@ todo
 - vs bot
 - list user display name
 -button reset lepas abih game kena ubah "back to home"
+- time attack for each player ( 15 second limit )
