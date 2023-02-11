@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Button, Modal } from "flowbite-react";
 import ModalRule from "./ModalRule";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faVolumeDown, faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
 
 const socket = io();
 // const ns1 = io.connect("http://localhost:3001/room");
 
-function ModalLogin({ joinRoom }) {
+function ModalLogin({ joinRoom, audioHandler }) {
   const [room, setRoom] = useState(0);
   const [name, setName] = useState("");
   const [isOpen, setIsOpen] = useState(true);
@@ -30,6 +32,14 @@ function ModalLogin({ joinRoom }) {
     setRule((prev) => !prev);
     // setIsOpen(false);
   };
+
+  const playAudio = () => {
+    audioHandler(1)
+  }
+
+  const pauseAudio = () => {
+    audioHandler(2)
+  }
 
   const closeRule = () => {
     setRule(false);
@@ -82,6 +92,14 @@ function ModalLogin({ joinRoom }) {
                   >
                     Rule
                   </button>
+                  <div className="flex flex-row mt-6 gap-5">
+                      <button className="bg-gray-100 py-2 px-4" onClick={() => playAudio(1)}>
+                    <FontAwesomeIcon icon={faVolumeDown} />
+                      </button>
+                    <button className="bg-gray-100 py-2 px-3" onClick={() => pauseAudio(2)} >
+                      <FontAwesomeIcon icon={faVolumeHigh} />
+                      </button>
+                  </div>
                 </>
               )}
             </div>

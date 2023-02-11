@@ -1,3 +1,5 @@
+import { faVolumeDown, faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Modal } from "flowbite-react";
 import React, { useState } from "react";
 
@@ -10,6 +12,14 @@ const PlayerList = (props) => {
 
   const showModal = () => {
     setShow(true)
+  }
+
+  const playAudio = () => {
+    props.audioHandler(1)
+  } 
+  
+  const muteAudio = () => {
+    props.audioHandler(2)
   }
 
   const closeModal = () => {
@@ -66,6 +76,14 @@ const PlayerList = (props) => {
       </Modal.Body>
     </Modal>
       <div className="fixed top-0 right-1 p-2 m-2 rounded-lg flex justify-center">
+      <div className="flex flex-row gap-3 mr-3">
+                      <button className="bg-gray-100 py-2 px-4" onClick={() => playAudio(1)}>
+                    <FontAwesomeIcon icon={faVolumeDown} />
+                      </button>
+                    <button className="bg-gray-100 py-2 px-3" onClick={() => muteAudio(2)} >
+                      <FontAwesomeIcon icon={faVolumeHigh} />
+                      </button>
+                  </div>
         <button className="py-2 px-3 bg-yellow-200 rounded-lg mr-4 font-semibold text-gray-700 hover:bg-yellow-300"
          onClick={showModal}
         >Help ?</button>

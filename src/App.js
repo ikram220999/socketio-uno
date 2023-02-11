@@ -10,6 +10,7 @@ import { deck } from "./Deck";
 import { defaultCard } from "./Deck";
 import { data } from "autoprefixer";
 import PlayerList from "./playerlist";
+import audio from './audio.mp3';
 
 const socket = io("https://uno-socketio.herokuapp.com");
 // const socket = io("http://localhost:3001");
@@ -113,6 +114,16 @@ function App() {
 
     socket.emit("join_room", { room: room, name: name });
   };
+
+  const audioHandler = (data) => {
+    let a = document.getElementById('themeAudio');
+
+    if(data == 1) {
+      a.muted = true;
+    } else if ( data == 2) {
+      a.muted = false
+    }
+  }
 
   // console.log("id saya", id);
 
@@ -798,12 +809,11 @@ function App() {
 
   return (
     <>
+      <audio autoPlay loop id="themeAudio"><source src={audio} type="audio/mpeg" /></audio>
       {isStart ? (
         <>
           <button
-            className=" xs:text-sm xs:py-2 xs:px-4 sm:text-sm sm:py-2 sm:px-4 fixed bottom-2 right-2 bg-gray-400 py-3 px-5 text-white rounded-md hover:bg-gray-600
-    
-    "
+            className=" xs:text-sm xs:py-2 xs:px-4 sm:text-sm sm:py-2 sm:px-4 fixed bottom-2 right-2 bg-gray-400 py-3 px-5 text-white rounded-md hover:bg-gray-600"
             onClick={() => resetGame()}
           >
             Reset
@@ -812,7 +822,7 @@ function App() {
       ) : (
         ""
       )}
-      <ModalLogin joinRoom={joinRoom} />
+      <ModalLogin joinRoom={joinRoom} audioHandler={audioHandler}/>
       <Modal show={isOpenChangeColor} size="sm" onClose={""}>
         <Modal.Body>
           <div className="w-90 flex flex-row justify-center items-center">
@@ -1000,7 +1010,7 @@ function App() {
                   </div>
                 </div>
                 <div className="w-full xl:w-1/2 h-full my-10 xs:my-0 xs:h-screen sm:my-0 sm:h-screen flex flex-col justify-center items-center">
-                  <PlayerList turn={playerTurn} />
+                  <PlayerList turn={playerTurn} audioHandler={audioHandler}/>
                   <div className="w-1/4 xs:w-full sm:w-full justify-center items-center">
                     <Card>
                       <div className="flex flex-col justify-center items-center">
